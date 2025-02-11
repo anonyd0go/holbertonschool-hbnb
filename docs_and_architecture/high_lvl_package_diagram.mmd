@@ -1,24 +1,45 @@
-flowchart TD
-    %% Presentation Layer
-    subgraph Presentation[Presentation Layer]
-        API[API Endpoints]
-    end
+classDiagram
+    direction LR
 
-    %% Business Logic Layer with Facade
-    subgraph BusinessLogic[Business Logic Layer]
-        Facade[Facade Interface]
-        Core[Core Business Logic]
-    end
+    %% Presentation Layer Package
+    class PresentationLayer {
+        <<Package>>
+        API Endpoints
+        Services
+        +register_user()
+        +create_place()
+        +submit_review()
+        +fetch_places()
+    }
 
-    %% Persistence Layer
-    subgraph Persistence[Persistence Layer]
-        DB[Database Integration]
-    end
+    %% Facade Component within the Business Logic context
+    class Facade {
+        <<Facade>>
+        +handleRequest()
+    }
 
-    %% Communication Pathways
-    API -->|Request| Facade
-    Facade -->|Delegates to| Core
-    Core -->|Queries/Commands| DB
-    DB -->|Response| Core
-    Core -->|Response| Facade
-    Facade -->|Response| API
+    %% Business Logic Layer Package
+    class BusinessLogicLayer {
+        <<Package>>
+        User
+        Place
+        Review
+        Amenity
+        +validate_data()
+        +process_request()
+    }
+
+    %% Persistence Layer Package
+    class PersistenceLayer {
+        <<Package>>
+        Database
+        +save()
+        +update()
+        +delete()
+        +query()
+    }
+
+    %% Relationships indicating communication pathways
+    PresentationLayer --> Facade : Facade Pattern
+    Facade --> BusinessLogicLayer : Delegates requests
+    BusinessLogicLayer --> PersistenceLayer : Database Operations
