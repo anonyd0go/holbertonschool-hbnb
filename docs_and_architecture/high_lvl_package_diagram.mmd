@@ -1,0 +1,24 @@
+flowchart TD
+    %% Presentation Layer
+    subgraph Presentation[Presentation Layer]
+        API[API Endpoints]
+    end
+
+    %% Business Logic Layer with Facade
+    subgraph BusinessLogic[Business Logic Layer]
+        Facade[Facade Interface]
+        Core[Core Business Logic]
+    end
+
+    %% Persistence Layer
+    subgraph Persistence[Persistence Layer]
+        DB[Database Integration]
+    end
+
+    %% Communication Pathways
+    API -->|Request| Facade
+    Facade -->|Delegates to| Core
+    Core -->|Queries/Commands| DB
+    DB -->|Response| Core
+    Core -->|Response| Facade
+    Facade -->|Response| API
