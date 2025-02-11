@@ -1,0 +1,2 @@
+# Documentation and Architecture
+This directory contains all documentation associated with the Hbnb project.  It will also contain all architecture, layers, and flowcharts needed to understand how the project is built.
