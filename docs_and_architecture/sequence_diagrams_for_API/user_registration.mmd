@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant Client
+    participant API as Presentation Layer (API)
+    participant BL as Business Logic Layer (Facade/Models)
+    participant DB as Persistence Layer (Database)
+
+    Client->>API: POST /users/register (user data)
+    API->>BL: register_user(user data)
+    BL->>DB: INSERT new User record
+    DB-->>BL: Success/User record
+    BL-->>API: User created confirmation
+    API-->>Client: 201 Created with user details
