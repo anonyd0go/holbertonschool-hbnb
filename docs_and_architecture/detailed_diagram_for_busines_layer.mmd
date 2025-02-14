@@ -1,0 +1,49 @@
+classDiagram
+    direction LR
+
+    %% User Class
+    class User {
+      +UUID id
+      +String username
+      +String email
+      +DateTime created_at
+      +DateTime updated_at
+      +register()
+      +updateProfile()
+    }
+
+    %% Place Class
+    class Place {
+      +UUID id
+      +String title
+      +Float price
+      +String location
+      +DateTime created_at
+      +DateTime updated_at
+      +createListing()
+      +updateListing()
+    }
+
+    %% Amenity Class
+    class Amenity {
+      +UUID id
+      +String name
+      +String description
+      +DateTime created_at
+      +DateTime updated_at
+    }
+
+    %% Review Class
+    class Review {
+      +UUID id
+      +Integer rating
+      +String comment
+      +DateTime created_at
+      +DateTime updated_at
+      +submitReview()
+    }
+
+    %% Relationships
+    User "1" -- "0..*" Review : writes
+    Place "1" -- "0..*" Review : receives
+    Place "1" -- "0..*" Amenity : includes
