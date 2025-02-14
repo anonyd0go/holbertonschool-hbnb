@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant Client
+    participant API as Presentation Layer (API)
+    participant BL as Business Logic Layer (Facade/Models)
+    participant DB as Persistence Layer (Database)
+
+    Client->>API: POST /reviews/submit (review data)
+    API->>BL: submit_review(review data)
+    BL->>DB: INSERT new Review record
+    DB-->>BL: Success/Review record
+    BL-->>API: Review submitted confirmation
+    API-->>Client: 201 Created with review details
