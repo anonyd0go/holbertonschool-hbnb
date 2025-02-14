@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant Client
+    participant API as Presentation Layer (API)
+    participant BL as Business Logic Layer (Facade/Models)
+    participant DB as Persistence Layer (Database)
+
+    Client->>API: POST /places/create (listing data)
+    API->>BL: create_listing(listing data)
+    BL->>DB: INSERT new Place record
+    DB-->>BL: Success/Place record
+    BL-->>API: Listing created confirmation
+    API-->>Client: 201 Created with listing details
