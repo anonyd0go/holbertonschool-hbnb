@@ -9,7 +9,7 @@ classDiagram
       +DateTime created_at
       +DateTime updated_at
       +register()
-      +updateProfile()
+      +update_profile()
     }
 
     %% Place Class
@@ -20,8 +20,8 @@ classDiagram
       +String location
       +DateTime created_at
       +DateTime updated_at
-      +createListing()
-      +updateListing()
+      +create_listing()
+      +update_listing()
     }
 
     %% Amenity Class
@@ -40,10 +40,11 @@ classDiagram
       +String comment
       +DateTime created_at
       +DateTime updated_at
-      +submitReview()
+      +submit_review()
     }
 
     %% Relationships
-    User "1" -- "0..*" Review : writes
-    Place "1" -- "0..*" Review : receives
-    Place "1" -- "0..*" Amenity : includes
+    User "1" o-- "0..*" Place : owns
+    User "1" --> "0..*" Review : writes
+    Place "1" --> "0..*" Review : receives
+    Place "1" o-- "0..*" Amenity : includes
