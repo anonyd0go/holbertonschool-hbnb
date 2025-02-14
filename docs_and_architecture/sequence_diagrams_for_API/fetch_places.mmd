@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant Client
+    participant API as Presentation Layer (API)
+    participant BL as Business Logic Layer (Facade/Models)
+    participant DB as Persistence Layer (Database)
+
+    Client->>API: GET /places?criteria=...
+    API->>BL: fetch_places(criteria)
+    BL->>DB: Query Places with criteria
+    DB-->>BL: List of Places (data)
+    BL-->>API: Places data formatted
+    API-->>Client: 200 OK with places data
