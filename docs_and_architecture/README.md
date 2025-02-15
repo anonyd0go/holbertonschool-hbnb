@@ -21,6 +21,10 @@ classDiagram
         <<Package>>
         API Endpoints
         Services
+        +register_user()
+        +create_place()
+        +submit_review()
+        +fetch_places()
     }
 
     %% Facade Component within the Business Logic context
