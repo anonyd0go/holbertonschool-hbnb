@@ -21,10 +21,6 @@ classDiagram
         <<Package>>
         API Endpoints
         Services
-        +register_user()
-        +create_place()
-        +submit_review()
-        +fetch_places()
     }
 
     %% Facade Component within the Business Logic context
@@ -42,6 +38,10 @@ classDiagram
         Amenity
         +validate_data()
         +process_request()
+        +register_user()
+        +create_place()
+        +submit_review()
+        +fetch_places()
     }
 
     %% Persistence Layer Package
@@ -59,3 +59,37 @@ classDiagram
     Facade --> BusinessLogicLayer : Delegates requests
     BusinessLogicLayer --> PersistenceLayer : Database Operations
 ```
+1. Presentation Layer
+
+    * Responsibilities:
+        * Exposes the API endpoints that the client applications interact with.
+        * Handles HTTP requests, input validation, and response formatting.
+        * Manages services like user registration, place creation, review submission, and retrieving places.
+    * Key Components:
+        * **API Endpoints & Services**: These provide the interface for client interactions (e.g., `register_user()`, `create_place()`).
+
+2. **Facade Component**
+    * **Role**:
+        * Acts as an intermediary between the Presentation and Business Logic layers.
+        * Simplifies the interface exposed to the Presentation layer.
+        * Encapsulates the complexity of the underlying business logic by providing a unified method (e.g., `handleRequest()`).
+    * **Benefits**:
+        * Encapsulation: Hides internal implementation details.
+        * Loose Coupling: Allows changes in business logic without impacting the presentation layer.
+        * Simplified Communication: Provides a consistent entry point for all business operations.
+
+3. **Business Logic Layer**
+    * Responsibilities:
+        * Implements the core business rules and processes.
+        * Manages entities such as User, Place, Review, and Amenity.
+        * Performs operations like data validation and processing of requests.
+    * Key Operations:
+        * `validate_data()` & `process_request()`: Ensures that business rules are correctly applied before interacting with the persistence layer.
+
+4. **Persistence Layer**
+    * Responsibilities:
+        * Manages all interactions with the database.
+        * Provides CRUD (Create, Read, Update, Delete) operations for all entities.
+        * Abstracts the complexity of data storage from the business logic.
+    * Key Operations:
+        * `save()`, `update()`, `delete()`, `query()`: Handle the underlying database operations.
