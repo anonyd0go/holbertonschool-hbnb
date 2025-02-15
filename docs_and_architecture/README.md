@@ -10,4 +10,52 @@ This document covers the following key aspects:
 
 ---
 
+## High-Level Package Diagram
+### Diagram:
+```mermaid
+classDiagram
+    direction LR
 
+    %% Presentation Layer Package
+    class PresentationLayer {
+        <<Package>>
+        API Endpoints
+        Services
+        +register_user()
+        +create_place()
+        +submit_review()
+        +fetch_places()
+    }
+
+    %% Facade Component within the Business Logic context
+    class Facade {
+        <<Facade>>
+        +handleRequest()
+    }
+
+    %% Business Logic Layer Package
+    class BusinessLogicLayer {
+        <<Package>>
+        User
+        Place
+        Review
+        Amenity
+        +validate_data()
+        +process_request()
+    }
+
+    %% Persistence Layer Package
+    class PersistenceLayer {
+        <<Package>>
+        Database
+        +save()
+        +update()
+        +delete()
+        +query()
+    }
+
+    %% Relationships indicating communication pathways
+    PresentationLayer --> Facade : Facade Pattern
+    Facade --> BusinessLogicLayer : Delegates requests
+    BusinessLogicLayer --> PersistenceLayer : Database Operations
+```
