@@ -3,12 +3,12 @@ from basecls import BaseModel
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
-        self._title = title
-        self._description = description
-        self._price = price
-        self._latitude = latitude
-        self._longitude = longitude
-        self._owner = owner
+        self.title = title
+        self.description = description
+        self.price = price
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner = owner
         self.reviews = []  # List to store related reviews
         self.amenities = []  # List to store related amenities
 
