@@ -4,7 +4,8 @@ from basecls import BaseModel
 class Place(BaseModel):
     """
     Place model class that inherits from BaseModel.
-    Represents a place with various attributes and related reviews and amenities.
+    Represents a place with various attributes and related
+    reviews and amenities.
     """
     def __init__(self, title, description, price, latitude, longitude, owner):
         """
