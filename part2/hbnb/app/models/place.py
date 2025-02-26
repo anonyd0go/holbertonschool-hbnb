@@ -27,7 +27,7 @@ class Place(BaseModel):
     @title.setter
     def title(self, title):
         if len(title) > 100:
-            raise ValueError
+            raise ValueError("Place title is longer than 100 chars")
         self._title = title
 
     @property
@@ -45,9 +45,9 @@ class Place(BaseModel):
     @price.setter
     def price(self, price):
         if type(price) is not float:
-            raise TypeError
+            raise TypeError("Place price is not type float")
         if price < 0:
-            raise ValueError
+            raise ValueError("Place price must be positive")
         self._price = price
 
     @property
@@ -57,9 +57,9 @@ class Place(BaseModel):
     @latitude.setter
     def latitude(self, latitude):
         if type(latitude) is not float:
-            raise TypeError
+            raise TypeError("Place latitude must be type float")
         if latitude not in range(-90.0, 90.1):
-            return ValueError
+            return ValueError("Place latitude must be in range -90.0 to 90.0")
         self._latitude = latitude
 
     @property
@@ -69,9 +69,9 @@ class Place(BaseModel):
     @longitude.setter
     def longitude(self, longitude):
         if type(longitude) is not float:
-            raise TypeError
+            raise TypeError("Place longitude must be type float")
         if longitude not in range(-180.0, 180.1):
-            raise ValueError
+            raise ValueError("Place longitude must be in range -180.0 to 180.0")
         self._longitude = longitude
     
     @property
