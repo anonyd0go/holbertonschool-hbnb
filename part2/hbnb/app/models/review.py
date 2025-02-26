@@ -1,5 +1,6 @@
 from basecls import BaseModel
 
+
 class Review(BaseModel):
     def __init__(self, text, rating, place, user):
         super().__init__()
@@ -33,7 +34,7 @@ class Review(BaseModel):
     @property
     def place(self):
         return self._place
-    
+
     @place.setter
     def place(self, place):
         self._place = place
@@ -41,7 +42,7 @@ class Review(BaseModel):
     @property
     def user(self):
         return self._user
-    
+
     @user.setter
     def user(self, user):
         self._user = user
