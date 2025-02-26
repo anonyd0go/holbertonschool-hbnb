@@ -1,5 +1,6 @@
 from basecls import BaseModel
 
+
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
@@ -19,11 +20,11 @@ class Place(BaseModel):
     def add_amenity(self, amenity):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
-    
+
     @property
     def title(self):
         return self._title
-    
+
     @title.setter
     def title(self, title):
         if len(title) > 100:
@@ -33,15 +34,15 @@ class Place(BaseModel):
     @property
     def description(self):
         return self._description
-    
+
     @description.setter
     def description(self, description):
         self._description = description
-    
+
     @property
     def price(self):
         return self._price
-    
+
     @price.setter
     def price(self, price):
         if type(price) is not float:
@@ -53,7 +54,7 @@ class Place(BaseModel):
     @property
     def latitude(self):
         return self._latitude
-    
+
     @latitude.setter
     def latitude(self, latitude):
         if type(latitude) is not float:
@@ -65,19 +66,19 @@ class Place(BaseModel):
     @property
     def longitude(self):
         return self._longitude
-    
+
     @longitude.setter
     def longitude(self, longitude):
         if type(longitude) is not float:
             raise TypeError("Place longitude must be type float")
         if longitude not in range(-180.0, 180.1):
-            raise ValueError("Place longitude must be in range -180.0 to 180.0")
+            raise ValueError("Place longitude must be range -180.0 to 180.0")
         self._longitude = longitude
-    
+
     @property
     def owner(self):
         return self._owner
-    
+
     @owner.setter
     def owner(self, owner):
         self._owner = owner
