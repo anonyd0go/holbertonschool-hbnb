@@ -58,7 +58,7 @@ class Place(BaseModel):
     def latitude(self, latitude):
         if type(latitude) is not float:
             raise TypeError
-        if latitude not in range(-90.0, 90.0):
+        if latitude not in range(-90.0, 90.1):
             return ValueError
         self._latitude = latitude
 
@@ -70,7 +70,7 @@ class Place(BaseModel):
     def longitude(self, longitude):
         if type(longitude) is not float:
             raise TypeError
-        if longitude not in range(-180.0, 180.0):
+        if longitude not in range(-180.0, 180.1):
             raise ValueError
         self._longitude = longitude
     
