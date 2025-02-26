@@ -15,7 +15,7 @@ class Review(BaseModel):
     @text.setter
     def text(self, text):
         if type(text) is not str:
-            raise TypeError
+            raise TypeError("Review text must be a str")
         self._text = text
 
     @property
@@ -25,9 +25,9 @@ class Review(BaseModel):
     @rating.setter
     def rating(self, rating):
         if type(rating) is not int:
-            raise TypeError
+            raise TypeError("Rating must be an int")
         if rating not in range(1, 6):
-            raise ValueError
+            raise ValueError("Rating outside of range (1-5)")
         self._rating = rating
 
     @property
