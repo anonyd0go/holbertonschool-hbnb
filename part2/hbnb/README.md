@@ -27,10 +27,94 @@ This project is a simple Airbnb-like clone built using Python and Flask. The app
 - **requirements.txt**: Lists all the Python packages needed for the project.
 - **README.md**: Contains a brief overview of the project.
 
+## Business Logic Layer
+
+### Entities and Responsibilities
+
+- **User**: Represents a user with first name, last name, email, and admin status.
+- **Place**: Represents a place with various attributes and related reviews and amenities.
+- **Review**: Represents a review with text, rating, place, and user.
+- **Amenity**: Represents an amenity with a name.
+
+### Examples
+
+#### Creating a User
+```python
+from app.models.user import User
+
+# Create a new user
+user = User(first_name="John", last_name="Doe", email="john.doe@example.com")
+
+# Access user attributes
+print(user.first_name)  # Output: John
+print(user.last_name)   # Output: Doe
+print(user.email)       # Output: john.doe@example.com
+```
+
+#### Creating a Place
+```python
+from app.models.place import Place
+
+# Create a new place
+place = Place(
+    title="Cozy Cottage",
+    description="A cozy cottage in the countryside.",
+    price=100.0,
+    latitude=34.0522,
+    longitude=-118.2437,
+    owner="John Doe"
+)
+
+# Access place attributes
+print(place.title)       # Output: Cozy Cottage
+print(place.description) # Output: A cozy cottage in the countryside.
+print(place.price)       # Output: 100.0
+```
+
+#### Creating a Review
+```python
+from app.models.review import Review
+from app.models.place import Place
+from app.models.user import User
+
+# Create a new user and place
+user = User(first_name="John", last_name="Doe", email="john.doe@example.com")
+place = Place(
+    title="Cozy Cottage",
+    description="A cozy cottage in the countryside.",
+    price=100.0,
+    latitude=34.0522,
+    longitude=-118.2437,
+    owner="John Doe"
+)
+
+# Create a new review
+review = Review(
+    text="Great place to stay!",
+    rating=5,
+    place=place,
+    user=user
+)
+
+# Access review attributes
+print(review.text)   # Output: Great place to stay!
+print(review.rating) # Output: 5
+```
+
+#### Creating an Amenity
+```python
+from app.models.amenity import Amenity
+
+# Create a new amenity
+amenity = Amenity(name="WiFi")
+
+# Access amenity attributes
+print(amenity.name)  # Output: WiFi
+```
+
+
 ## Installation and Running the Application
-
 ### Prerequisites
-
 - Python 3.6+
 - pip (Python package installer)
 
@@ -65,3 +149,4 @@ This project is a simple Airbnb-like clone built using Python and Flask. The app
 ```python run.py```
 
 3. The application will be available in a local server.
+
