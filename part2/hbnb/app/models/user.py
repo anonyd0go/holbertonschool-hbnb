@@ -111,3 +111,13 @@ class User(BaseModel):
             email (str): The new email of the user.
         """
         self._email = email
+    
+    @property
+    def is_admin(self):
+        """
+        Get the admin status of the user.
+
+        Returns:
+            bool: The admin status of the user.
+        """
+        return self.__is_admin
