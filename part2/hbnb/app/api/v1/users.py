@@ -112,8 +112,8 @@ class UserResource(Resource):
             dict: A dictionary containing the updated user's details.
             int: The HTTP status code.
         """
-        update_data = api.payload
-        facade.update_user(user_id, update_data)
+        update_user_data = api.payload
+        facade.update_user(user_id, update_user_data)
         updated_user = facade.get_user(user_id)
         return {
             'id': updated_user.id,
