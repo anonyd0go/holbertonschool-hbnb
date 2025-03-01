@@ -26,6 +26,7 @@ class AmenityList(Resource):
         """
         amenity_data = api.payload
         new_amenity = facade.create_amenity(amenity_data)
+
         return {
             "id": new_amenity.id,
             "name": new_amenity.name
@@ -49,6 +50,7 @@ class AmenityList(Resource):
                     "name": amenity.name
                 }
             )
+
         return amenities_list, 200
 
 @api.route('/<amenity_id>')
@@ -69,6 +71,7 @@ class AmenityResource(Resource):
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {'error' : 'Amenity not found'}, 404
+
         return {
             "id": amenity.id,
             "name": amenity.name
@@ -96,10 +99,9 @@ class AmenityResource(Resource):
         amenity_to_update = facade.get_amenity(amenity_id)
         if not amenity_to_update:
             return {'error': 'Amenity not found'}, 404
-        if not set(update_amenity_data.keys()).issubset(set(dir(amenity_to_update))):
-            return {"error": "Invalid input data"}, 400
         try:
             facade.update_amenity(amenity_id, update_amenity_data)
         except Exception:
             return {"error": "Invalid input data"}, 400
+
         return {"message" : "Amenity updated successfully"}, 200
