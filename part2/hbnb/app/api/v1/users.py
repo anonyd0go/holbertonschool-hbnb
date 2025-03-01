@@ -10,6 +10,7 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user')
 })
 
+
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
@@ -34,14 +35,18 @@ class UserList(Resource):
         if existing_user:
             return {'error': 'Email already registered'}, 400
 
-        new_user = facade.create_user(user_data)
+        try:
+            new_user = facade.create_user(user_data)
+        except Exception:
+            return {"error": "Invalid input data"}
         return {
             'id': new_user.id,
             'first_name': new_user.first_name,
             'last_name': new_user.last_name,
-            'email': new_user.email
+            'email': new_user.email,
+            'places': new_user.places
             }, 201
-    
+
     @api.response(200, "All users succesfully retrieved")
     def get(self):
         """
@@ -91,10 +96,11 @@ class UserResource(Resource):
             'id': user.id,
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'email': user.email
+            'email': user.email,
+            'places': user.places
         }, 200
-    
-    @api.expect(user_model, validate=True)
+
+    @api.expect(user_model)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
@@ -113,11 +119,18 @@ class UserResource(Resource):
             int: The HTTP status code.
         """
         update_user_data = api.payload
+        user = facade.get_user(user_id)
+        if not user:
+            return {"error": "User not found"}, 404
+        if not set(update_user_data.keys()).issubset(dir(user)):
+            return {"error": "Invalid input data"}, 400
+        # TODO validate places exist if it will be modified
         facade.update_user(user_id, update_user_data)
         updated_user = facade.get_user(user_id)
         return {
             'id': updated_user.id,
             'first_name': updated_user.first_name,
             'last_name': updated_user.last_name,
-            'email': updated_user.email
+            'email': updated_user.email,
+            'places': updated_user.places
         }, 200
