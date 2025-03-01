@@ -7,21 +7,21 @@ class Review(BaseModel):
     Represents a review with text, rating, place, and user.
     """
 
-    def __init__(self, text, rating, place, user):
+    def __init__(self, text, rating, place_id, user_id):
         """
         Initialize a Review instance.
 
         Args:
             text (str): The text of the review.
             rating (int): The rating of the review (1-5).
-            place (Place): The place being reviewed.
-            user (User): The user who wrote the review.
+            place_id (str): The ID of the place being reviewed.
+            user_id (str): The ID of the user who wrote the review.
         """
         super().__init__()
         self.text = text
         self.rating = rating
-        self.place = place
-        self.user = user
+        self.place_id = place_id
+        self.user_id = user_id
 
     @property
     def text(self):
@@ -77,41 +77,51 @@ class Review(BaseModel):
         self._rating = rating
 
     @property
-    def place(self):
+    def place_id(self):
         """
-        Get the place being reviewed.
+        Get the ID of the place being reviewed.
 
         Returns:
-            Place: The place being reviewed.
+            str: The ID of the place being reviewed.
         """
-        return self._place
+        return self._place_id
 
-    @place.setter
-    def place(self, place):
+    @place_id.setter
+    def place_id(self, place_id):
         """
-        Set the place being reviewed.
+        Set the ID of the place being reviewed.
 
         Args:
-            place (Place): The new place being reviewed.
+            place_id (str): The new ID of the place being reviewed.
+
+        Raises:
+            TypeError: If the place_id is not a string.
         """
-        self._place = place
+        if not isinstance(place_id, str):
+            raise TypeError("Review place_id must be a str")
+        self._place_id = place_id
 
     @property
-    def user(self):
+    def user_id(self):
         """
-        Get the user who wrote the review.
+        Get the ID of the user who wrote the review.
 
         Returns:
-            User: The user who wrote the review.
+            str: The ID of the user who wrote the review.
         """
-        return self._user
+        return self._user_id
 
-    @user.setter
-    def user(self, user):
+    @user_id.setter
+    def user_id(self, user_id):
         """
-        Set the user who wrote the review.
+        Set the ID of the user who wrote the review.
 
         Args:
-            user (User): The new user who wrote the review.
+            user_id (str): The new ID of the user who wrote the review.
+
+        Raises:
+            TypeError: If the user_id is not a string.
         """
-        self._user = user
+        if not isinstance(user_id, str):
+            raise TypeError("Review user_id must be a str")
+        self._user_id = user_id
