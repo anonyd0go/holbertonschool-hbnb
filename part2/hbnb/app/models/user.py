@@ -3,10 +3,8 @@ from app.models.basecls import BaseModel
 
 class User(BaseModel):
     """
-    Set the user who wrote the review.
-
-    Args:
-        user (User): The new user who wrote the review.
+    User model class that inherits from BaseModel.
+    Represents a user with first name, last name, email, and admin status.
     """
 
     def __init__(self, first_name, last_name, email, is_admin=False):
@@ -24,7 +22,7 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.__is_admin = is_admin
-        self.places = []
+        self._places = []
 
     def add_place(self, place):
         """
@@ -33,7 +31,38 @@ class User(BaseModel):
         Args:
             place (Place): The place to add.
         """
-        self.places.append(place)
+        self._places.append(place)
+
+    @property
+    def places(self):
+        """
+        Get the list of places associated with the user.
+
+        Returns:
+            list: The list of places.
+        """
+        return self._places
+
+    @places.setter
+    def places(self, places):
+        """
+        Set the list of places associated with the user.
+
+        Args:
+            places (str or list): A place or a list of places to add.
+
+        Raises:
+            TypeError: If the places is not a string or a list of strings.
+        """
+        if type(places) is str:
+            self.add_place(places)
+            self._places = self.places
+        elif type(places) is list:
+            if not all(isinstance(plc, str) for plc in places):
+                raise TypeError("User places must be a list of str")
+            self._places = self.places + places
+        else:
+            raise TypeError("User places can only process str or list")
 
     @property
     def first_name(self):
@@ -111,7 +140,7 @@ class User(BaseModel):
             email (str): The new email of the user.
         """
         self._email = email
-    
+
     @property
     def is_admin(self):
         """
