@@ -1,5 +1,5 @@
 from app.models.basecls import BaseModel
-
+from email_validator import validate_email, EmailNotValidError
 
 class User(BaseModel):
     """
@@ -130,7 +130,6 @@ class User(BaseModel):
         """
         return self._email
 
-    # TODO email validation
     @email.setter
     def email(self, email):
         """
@@ -139,6 +138,8 @@ class User(BaseModel):
         Args:
             email (str): The new email of the user.
         """
+        if not validate_email(email, check_deliverability=False):
+            raise EmailNotValidError
         self._email = email
 
     @property
