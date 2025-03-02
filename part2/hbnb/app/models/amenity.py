@@ -15,7 +15,7 @@ class Amenity(BaseModel):
             name (str): The name of the amenity.
         """
         super().__init__()
-        self._name = name
+        self.name = name
 
     @property
     def name(self):
@@ -38,6 +38,8 @@ class Amenity(BaseModel):
         Raises:
             ValueError: If the name is longer than 50 characters.
         """
+        if not name.strip():
+            raise ValueError("Amenity must have a name")
         if len(name) > 50:
             raise ValueError("Amenity name is too long")
         self._name = name
