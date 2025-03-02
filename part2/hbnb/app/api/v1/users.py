@@ -38,7 +38,8 @@ class UserList(Resource):
         try:
             new_user = facade.create_user(user_data)
         except Exception:
-            return {"error": "Invalid input data"}
+            return {"error": "Invalid input data"}, 400
+
         return {
             'id': new_user.id,
             'first_name': new_user.first_name,
@@ -69,6 +70,7 @@ class UserList(Resource):
                     'email': user.email
                 }
             )
+
         return user_list, 200
 
 
@@ -92,6 +94,7 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
+
         return {
             'id': user.id,
             'first_name': user.first_name,
@@ -122,11 +125,16 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {"error": "User not found"}, 404
-        if not set(update_user_data.keys()).issubset(dir(user)):
+        if not set(update_user_data.keys()).issubset(set(dir(user))):
             return {"error": "Invalid input data"}, 400
-        # TODO validate places exist if it will be modified
-        facade.update_user(user_id, update_user_data)
+
+        # TODO validate places exist if it will be modified or find how to remove it if desired
+        try:
+            facade.update_user(user_id, update_user_data)
+        except Exception:
+            return {"error": "Invalid input data"}, 400
         updated_user = facade.get_user(user_id)
+
         return {
             'id': updated_user.id,
             'first_name': updated_user.first_name,
