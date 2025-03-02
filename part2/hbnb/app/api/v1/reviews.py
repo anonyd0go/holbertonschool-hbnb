@@ -123,7 +123,7 @@ class ReviewResource(Resource):
         except:
             return {"error": "Invalid input data"}, 400
 
-        return {"message": "Review updated succesfully"}, 200
+        return {"message": "Review updated successfully"}, 200
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
