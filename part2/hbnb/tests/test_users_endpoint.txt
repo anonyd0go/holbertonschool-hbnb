@@ -1,0 +1,95 @@
+user:  USE CREATED USER IDs FOR TESTS
+
+request:
+curl -X POST http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com"}'
+
+expected response:
+{
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com"
+}
+// 201
+
+request:
+curl -X POST http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "", "last_name": "Doe", "email": "john.doe@example.com"}'
+
+expected response:
+{
+    "error": "Invalid input data"
+}
+// 400
+
+request:
+curl -X POST http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com"}'
+
+curl -X POST http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "Pepe", "last_name": "Donald", "email": "john.doe@example.com"}'
+
+expected response:
+{
+    "error": "Email already registered"
+}
+// 400
+
+request:
+curl -X POST http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com"}'
+// 201
+
+curl -X GET http://localhost:5000/api/v1/users/3fa85f64-5717-4562-b3fc-2c963f66afa6 \
+  -H "Content-Type: application/json"
+
+expected response:
+if user:
+{
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "places": []
+}
+// 200
+
+else:
+{ 'error': 'User not found' }
+// 404
+
+request:
+curl -X PUT http://localhost:5000/api/v1/users/3fa85f64-5717-4562-b3fc-2c963f66afa6 \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "Jane"}'
+
+expected response:
+if user:
+{
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "places": []
+}
+// 200
+
+else:
+{ 'error': 'User not found' }
+// 404
+
+request:
+curl -X PUT http://localhost:5000/api/v1/users/3fa85f64-5717-4562-b3fc-2c963f66afa6 \
+  -H "Content-Type: application/json" \
+  -d '{"money": 200.00}'
+
+expected response:
+if user:
+{ 'error': 'Invalid input data' }
+// 400
