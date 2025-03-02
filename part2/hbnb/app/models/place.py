@@ -37,6 +37,16 @@ class Place(BaseModel):
             review: The review to add.
         """
         self._reviews.append(review)
+    
+    def remove_review(self, review):
+        """
+        Remove a review from the place.
+
+        Args:
+            review: review to remove
+        """
+        if review in self.reviews:
+            self._reviews.remove(review)
 
     @property
     def reviews(self):
