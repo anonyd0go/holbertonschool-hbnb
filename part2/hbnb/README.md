@@ -22,6 +22,7 @@ This project is a simple Airbnb-like clone built using Python and Flask. The app
     - **facade.py**: Contains the Facade class to simplify communication between layers.
   - **persistence/**: Implements the in-memory repository, which will later be replaced by a database-backed solution using SQL Alchemy.
     - **repository.py**: Defines the repository classes for data persistence.
+- **tests**: Contains unittests for the application.
 - **run.py**: Entry point for running the Flask application.
 - **config.py**: Configures environment variables and application settings.
 - **requirements.txt**: Lists all the Python packages needed for the project.
@@ -150,3 +151,9 @@ print(amenity.name)  # Output: WiFi
 
 3. The application will be available in a local server.
 
+### Running Unit Tests
+To run the unit tests, you need to update the PYTHONPATH to include the project directory. You can do this from the command line:
+```
+export PYTHONPATH=$(pwd)
+```
+Then, you can run the tests using a test runner like `pytest`
