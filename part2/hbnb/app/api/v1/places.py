@@ -66,7 +66,7 @@ class PlaceList(Resource):
             int: The HTTP status code.
         """
         place_data = api.payload
-        if not facade.get_user(place_data["user_id"]):
+        if not facade.get_user(place_data["owner_id"]):
             return {"error": "Invalid input data"}, 400
 
         try:
@@ -166,8 +166,12 @@ class PlaceResource(Resource):
         if not set(update_place_data.keys()).issubset(set(dir(place_to_update))):
             return {"error": "Invalid input data"}, 400
 
-        facade.update_place(place_id, update_place_data)
-        return {"message": "Place updated succesfully"}, 200
+        try:
+            facade.update_place(place_id, update_place_data)
+        except:
+            return {"error": "Invalid input data"}, 400
+
+        return {"message": "Place updated successfully"}, 200
 
 
 # Did not understand how to get this uri to work from reviews.py
