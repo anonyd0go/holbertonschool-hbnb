@@ -19,7 +19,7 @@ def create_app():
         version='1.0',
         title='HBnB API',
         description='HBnB Application API',
-        doc='/api/vi/'
+        doc='/api/v1/'
     )
 
     # API namespaces for respective URIs
