@@ -139,10 +139,12 @@ class Place(BaseModel):
 
         Raises:
             TypeError: If the title is not a string.
-            ValueError: If the title is longer than 100 characters.
+            ValueError: If the title is longer than 100 characters or is empty.
         """
         if type(title) is not str:
             raise TypeError("Place title must be a str")
+        if not title.strip():
+            raise ValueError("Place title cannot be empty")
         if len(title) > 100:
             raise ValueError("Place title is longer than 100 chars")
         self._title = title
