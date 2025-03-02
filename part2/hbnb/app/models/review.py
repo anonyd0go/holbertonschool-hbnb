@@ -46,6 +46,8 @@ class Review(BaseModel):
         """
         if type(text) is not str:
             raise TypeError("Review text must be a str")
+        if not text.strip():
+            raise ValueError("Review text cannot be empty")
         self._text = text
 
     @property
