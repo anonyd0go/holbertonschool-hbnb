@@ -1,0 +1,4 @@
+flask
+flask-restx
+email-validator
+flask-bcrypt
