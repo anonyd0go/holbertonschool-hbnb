@@ -1,0 +1,50 @@
+amenity:
+curl -X POST http://localhost:5000/api/v1/amenities/   -H "Content-Type: application/json"   -d '{ "name": "WiFi" }'
+
+curl -X GET http://localhost:5000/api/v1/amenities/   -H "Content-Type: application/json"
+
+curl -X PUT http://localhost:5000/api/v1/amenities/   -H "Content-Type: application/json" -d '{"name": ""}'
+
+
+user:
+curl -X POST http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com", "password": "passcode123"}'
+
+curl -X GET http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json"
+
+curl -X PUT http://localhost:5000/api/v1/users/ \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+
+place:
+curl -X POST http://localhost:5000/api/v1/places/ \
+  -H "Content-Type: application/json" \
+  -d '{ "title": "Cozy Apartment", "description": "Anice place to stay", "price": 100.0, "latitude": 37.7749, "longitude": -122.4194, "owner_id": "" }'
+
+curl -X GET http://localhost:5000/api/v1/places/ -H "Content-Type: application/json"
+
+curl -X PUT http://localhost:5000/api/v1/places/ \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+
+review:
+curl -X POST http://localhost:5000/api/v1/reviews/ \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Great place to stay!", "rating": 5, "user_id": "", "place_id": ""}'
+
+curl -X GET http://localhost:5000/api/v1/reviews/ \
+  -H "Content-Type: application/json"
+
+curl -X PUT http://localhost:5000/api/v1/reviews/ \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+curl -X DELETE http://localhost:5000/api/v1/reviews/ \
+  -H "Content-Type: application/json"
+
+curl -X GET http://localhost:5000/api/v1/places/<place_id>/reviews \
+  -H "Content-Type: application/json"
