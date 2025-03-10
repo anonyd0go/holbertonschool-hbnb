@@ -7,6 +7,9 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 
 
+bcrypt = Bcrypt()
+
+
 def create_app(config_class="config.DevelopmentConfig"):
     """
     Create and configure the Flask application.
@@ -16,7 +19,6 @@ def create_app(config_class="config.DevelopmentConfig"):
     """
     app = Flask(__name__)
     app.config.from_object(config_class)
-    bcrypt = Bcrypt()
     bcrypt.init_app(app)
     api = Api(
         app,
