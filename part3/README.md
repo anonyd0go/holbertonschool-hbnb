@@ -19,4 +19,4 @@ In this part, I will implement a true persistance layer for the application, ini
     * Design a correctly mapped database schema with **mermaid.js**
 
 5. Data Consistency and Validation:
-    * Ensure data validation and constraints are properly enforced
+    * Ensure data validation and constraints are properly enforced.
