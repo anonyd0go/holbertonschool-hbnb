@@ -1,5 +1,5 @@
 from app.models.basecls import BaseModel
-from app import bcrypt
+from app.extensions import bcrypt
 from email_validator import validate_email, EmailNotValidError
 
 class User(BaseModel):
