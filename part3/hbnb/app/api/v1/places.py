@@ -31,7 +31,7 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
+    'owner_id': fields.String(required=False, description='ID of the owner'),
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's"),
     'reviews': fields.List(fields.String, description='List of reviews IDs')
 })
@@ -55,7 +55,6 @@ class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
-    @api.response(403, 'Unauthorized action')
     @jwt_required()
     def post(self):
         """
@@ -69,11 +68,9 @@ class PlaceList(Resource):
             int: The HTTP status code.
         """
         current_user = get_jwt_identity()
-        if not current_user:
-            return {'error': 'Unauthorized action'}, 403
+
         place_data = api.payload
-        if not place_data["owner_id"] == current_user:
-            return {'error': 'Unauthorized action'}, 403
+        place_data["owner_id"] = current_user
         if not facade.get_user(place_data["owner_id"]):
             return {"error": "Invalid input data"}, 400
 
@@ -173,10 +170,10 @@ class PlaceResource(Resource):
         current_user = get_jwt_identity()
         place_to_update = facade.get_place(place_id)
 
-        if place_to_update.owner_id != current_user:
-            return {'error': 'Unauthorized action'}, 403
         if not place_to_update:
             return {"error": "Place not found"}, 404
+        if place_to_update.owner_id != current_user:
+            return {'error': 'Unauthorized action'}, 403
         if not set(update_place_data.keys()).issubset(set(dir(place_to_update))):
             return {"error": "Invalid input data"}, 400
 
