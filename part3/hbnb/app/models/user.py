@@ -8,7 +8,7 @@ class User(BaseModel):
     Represents a user with first name, last name, email, and admin status.
     """
 
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, password, is_admin=False):
         """
         Initialize a User instance.
 
@@ -24,7 +24,7 @@ class User(BaseModel):
         self.email = email
         self.__is_admin = is_admin
         self._places = []
-        self._password = None
+        self.password = password
 
     @property
     def password(self):
@@ -32,11 +32,7 @@ class User(BaseModel):
 
     @password.setter
     def password(self, password):
-        self._password = self.hash_password(password)
-
-    def hash_password(self, password):
-        """Hashes the password before storing it."""
-        return bcrypt.generate_password_hash(password).decode('utf-8')
+        self._password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
         """Verifies if the provided password matches the hashed password."""
