@@ -70,7 +70,7 @@ class PlaceList(Resource):
         current_user = get_jwt_identity()
 
         place_data = api.payload
-        place_data["owner_id"] = current_user
+        place_data["owner_id"] = current_user # This might be a vulnerability
         if not facade.get_user(place_data["owner_id"]):
             return {"error": "Invalid input data"}, 400
 
@@ -87,7 +87,7 @@ class PlaceList(Resource):
             "price": new_place.price,
             "latitude": new_place.latitude,
             "longitude": new_place.longitude,
-            "owner_id": current_user
+            "owner_id": new_place.owner_id
         }, 201
 
     @api.response(200, 'List of places retrieved successfully')
@@ -165,9 +165,10 @@ class PlaceResource(Resource):
             dict: A dictionary containing a success message.
             int: The HTTP status code.
         """
+        current_user = get_jwt_identity()
+
         update_place_data = api.payload
         # TODO validate update info user existance, review existance, and amenity existance
-        current_user = get_jwt_identity()
         place_to_update = facade.get_place(place_id)
 
         if not place_to_update:
