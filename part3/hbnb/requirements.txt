@@ -1,5 +1,7 @@
+email-validator
 flask
 flask-restx
-email-validator
 flask-bcrypt
 flask-jwt-extended
+flask-sqlalchemy
+sqlalchemy
