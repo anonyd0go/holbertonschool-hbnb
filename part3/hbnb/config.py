@@ -12,9 +12,11 @@ class Config:
 class DevelopmentConfig(Config):
     """
     Development configuration class. Inherits from Config and sets DEBUG to 
-    True.
+    True. Uses SQLite for the database.
     """
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///development.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 config = {
