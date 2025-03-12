@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 api = Namespace('users', description='User operations')
@@ -105,6 +106,8 @@ class UserResource(Resource):
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Unauthorized action')
+    @jwt_required()
     def put(self, user_id):
         """
         Update user details by ID.
@@ -119,12 +122,19 @@ class UserResource(Resource):
             dict: A dictionary containing the updated user's details.
             int: The HTTP status code.
         """
+        current_user = get_jwt_identity()
+
         update_user_data = api.payload
         user = facade.get_user(user_id)
         if not user:
             return {"error": "User not found"}, 404
+        if user.id != current_user:
+            return {"error": "Unauthorized action"}, 403
         if not set(update_user_data.keys()).issubset(set(dir(user))):
             return {"error": "Invalid input data"}, 400
+
+        if "email" in update_user_data.keys() or "password" in update_user_data.keys():
+            return {"error": "You cannot modify email or password"}, 400
 
         # TODO validate places exist if it will be modified or find how to remove it if desired
         try:
