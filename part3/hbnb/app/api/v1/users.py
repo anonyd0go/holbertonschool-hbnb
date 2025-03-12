@@ -13,6 +13,8 @@ user_model = api.model('User', {
 })
 
 
+# TODO validation for admin role assignment when creating users
+# I think ^ this is is taken care of by the expect, validate=True?
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
