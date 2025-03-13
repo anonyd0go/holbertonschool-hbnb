@@ -20,7 +20,7 @@ class User(BaseModel):
     _password = db.Column("password", db.String(128), nullable=False)
     places = db.relationship("Place", backref='owner', lazy=True)
     reviews = db.relationship("Review", backref="user", lazy=True)
-    _is_admin = db.Column(db.Boolean, default=False)
+    _is_admin = db.Column("is_admin", db.Boolean, default=False)
 
     @hybrid_property
     def password(self):
