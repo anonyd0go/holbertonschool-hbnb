@@ -1,125 +1,50 @@
 from app.models.basecls import BaseModel
+from app.models.place_amenities import place_amenities
+from app.extensions import db
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
 
 
 class Place(BaseModel):
     """
     Place model class that inherits from BaseModel.
-    Represents a place with various attributes and related
-    reviews and amenities.
+
+    Represents a place with various attributes including title, description,
+    price, latitude, and longitude. It is related to a User (owner) via a foreign key,
+    may have multiple Reviews (one-to-many relationship), and is associated with multiple
+    Amenity instances via a many-to-many relationship (through the place_amenities association table).
+
+    Attributes:
+        _title (str): Title of the place.
+        _description (str): Detailed description of the place.
+        _price (float): Price of the place.
+        _latitude (float): Latitude coordinate of the place.
+        _longitude (float): Longitude coordinate of the place.
+        owner_id (str): Foreign key referencing the owner (User) of the place.
+        reviews (list[Review]): One-to-many relationship; list of reviews for the place.
+        amenities (list[Amenity]): Many-to-many relationship; list of amenity objects associated with the place.
     """
-    def __init__(self, title, description, price, latitude, longitude, owner_id):
-        """
-        Initialize a Place instance.
+    __tablename__ = "places"
 
-        Args:
-            title (str): The title of the place.
-            description (str): The description of the place.
-            price (float): The price of the place.
-            latitude (float): The latitude of the place.
-            longitude (float): The longitude of the place.
-            owner (str): The owner of the place.
-        """
-        super().__init__()
-        self.title = title
-        self.description = description
-        self.price = price
-        self.latitude = latitude
-        self.longitude = longitude
-        self.owner_id = owner_id
-        self._reviews = []  # List to store related reviews
-        self._amenities = []  # List to store related amenities
+    _title = db.Column("title", db.String(100), nullable=False)
+    _description = db.Column("description", db.Text, nullable=False)
+    _price = db.Column("price", db.Float, nullable=False)
+    _latitude = db.Column("latitude", db.Float, nullable=False)
+    _longitude = db.Column("longitude", db.Float, nullable=False)
+    owner_id = db.Column("owner_id", db.String(36), db.ForeignKey('users.id'), nullable=False)
 
-    def add_review(self, review):
-        """
-        Add a review to the place.
+    # One-to-many relationship with Review: each place can have multiple reviews.
+    reviews = db.relationship("Review", backref="place", lazy=True)
 
-        Args:
-            review: The review to add.
-        """
-        self._reviews.append(review)
-    
-    def remove_review(self, review):
-        """
-        Remove a review from the place.
+    # Many-to-many relationship with Amenity via the association table.
+    amenities = db.relationship(
+        "Amenity",
+        secondary=place_amenities,
+        lazy="subquery",
+        backref=db.backref("places", lazy=True)
+    )
 
-        Args:
-            review: review to remove
-        """
-        if review in self.reviews:
-            self._reviews.remove(review)
-
-    @property
-    def reviews(self):
-        """
-        Get the list of reviews associated with the place.
-
-        Returns:
-            list: The list of reviews.
-        """
-        return self._reviews
-
-    @reviews.setter
-    def reviews(self, reviews):
-        """
-        Set the list of reviews associated with the place.
-
-        Args:
-            reviews (str or list): A review or a list of reviews to add.
-
-        Raises:
-            TypeError: If the reviews is not a string or a list of strings.
-        """
-        if type(reviews) is str:
-            self.add_review(reviews)
-            self._reviews = self.reviews
-        elif type(reviews) is list:
-            if not all(isinstance(rev, str) for rev in reviews):
-                raise TypeError("Place reviews must be a list of str")
-            self._reviews = self.reviews + reviews
-        else:
-            raise TypeError("Place reviews can only be list or str")
-
-    def add_amenity(self, amenity):
-        """
-        Add an amenity to the place.
-
-        Args:
-            amenity: The amenity to add.
-        """
-        self._amenities.append(amenity)
-
-    @property
-    def amenities(self):
-        """
-        Get the list of amenities associated with the place.
-
-        Returns:
-            list: The list of amenities.
-        """
-        return self._amenities
-
-    @amenities.setter
-    def amenities(self, amenities):
-        """
-        Set the list of amenities associated with the place.
-
-        Args:
-            amenities (str or list): An amenity or a list of amenities to add.
-
-        Raises:
-            TypeError: If the amenities is not a string or a list of strings.
-        """
-        if type(amenities) is str:
-            self.add_amenity(amenities)
-            self._amenities = self.amenities
-        elif type(amenities) is list:
-            if not all(isinstance(ame, str) for ame in amenities):
-                raise TypeError("Place amenities must be a list of str")
-            self._amenities = self.amenities + amenities
-        else:
-            raise TypeError("Place amenities can only be str or list")
-
-    @property
+    @hybrid_property
     def title(self):
         """
         Get the title of the place.
@@ -135,21 +60,35 @@ class Place(BaseModel):
         Set the title of the place.
 
         Args:
-            title (str): The new title of the place.
+            title (str): The new title for the place.
+        """
+        self._title = title
+    
+    @validates("_title")
+    def validate_place_title(self, key, title):
+        """
+        Validate the title of the place.
+
+        Args:
+            key (str): The attribute key.
+            title (str): The title to validate.
+
+        Returns:
+            str: The validated title.
 
         Raises:
-            TypeError: If the title is not a string.
-            ValueError: If the title is longer than 100 characters or is empty.
+            TypeError: If title is not a str.
+            ValueError: If title is empty or exceeds 100 characters.
         """
-        if type(title) is not str:
+        if not isinstance(title, str):
             raise TypeError("Place title must be a str")
         if not title.strip():
             raise ValueError("Place title cannot be empty")
         if len(title) > 100:
             raise ValueError("Place title is longer than 100 chars")
-        self._title = title
+        return title
 
-    @property
+    @hybrid_property
     def description(self):
         """
         Get the description of the place.
@@ -165,16 +104,33 @@ class Place(BaseModel):
         Set the description of the place.
 
         Args:
-            description (str): The new description of the place.
+            description (str): The new description.
+        """
+        self._description = description
+    
+    @validates("_description")
+    def validate_place_description(self, key, description):
+        """
+        Validate the description of the place.
+
+        Args:
+            key (str): The attribute key.
+            description (str): The description to validate.
+
+        Returns:
+            str: The validated description.
 
         Raises:
-            TypeError: If the description is not a string.
+            TypeError: If description is not a string.
+            ValueError: If description is empty.
         """
-        if type(description) is not str:
+        if not isinstance(description, str):
             raise TypeError("Place description must be a str")
-        self._description = description
+        if not description.strip():
+            raise ValueError("Place description cannot be empty")
+        return description
 
-    @property
+    @hybrid_property
     def price(self):
         """
         Get the price of the place.
@@ -190,25 +146,39 @@ class Place(BaseModel):
         Set the price of the place.
 
         Args:
-            price (float): The new price of the place.
+            price (float|int): The new price.
+        """
+        self._price = price
+    
+    @validates("_price")
+    def validate_place_price(self, key, price):
+        """
+        Validate the price of the place.
+
+        Args:
+            key (str): The attribute key.
+            price (int|float): The price to validate.
+
+        Returns:
+            float: The validated price.
 
         Raises:
-            TypeError: If the price is not a float.
-            ValueError: If the price is negative.
+            TypeError: If price is not numeric.
+            ValueError: If price is negative.
         """
-        if type(price) is not float:
+        if not isinstance(price, (int, float)):
             raise TypeError("Place price is not type float")
         if price < 0:
             raise ValueError("Place price must be positive")
-        self._price = price
+        return float(price)
 
-    @property
+    @hybrid_property
     def latitude(self):
         """
         Get the latitude of the place.
 
         Returns:
-            float: The latitude of the place.
+            float: The latitude coordinate.
         """
         return self._latitude
 
@@ -218,25 +188,39 @@ class Place(BaseModel):
         Set the latitude of the place.
 
         Args:
-            latitude (float): The new latitude of the place.
+            latitude (float|int): The new latitude.
+        """
+        self._latitude = latitude
+    
+    @validates("_latitude")
+    def validate_place_latitude(self, key, latitude):
+        """
+        Validate the latitude of the place.
+
+        Args:
+            key (str): The attribute key.
+            latitude (float|int): The latitude to validate.
+
+        Returns:
+            float: The validated latitude.
 
         Raises:
-            TypeError: If the latitude is not a float.
-            ValueError: If the latitude is not in the range -90.0 to 90.0.
+            TypeError: If latitude is not numeric.
+            ValueError: If latitude is not between -90.0 and 90.0.
         """
-        if type(latitude) is not float:
+        if not isinstance(latitude, (int, float)):
             raise TypeError("Place latitude must be type float")
         if latitude < -90.0 or latitude > 90.0:
-            return ValueError("Place latitude must be in range -90.0 to 90.0")
-        self._latitude = latitude
+            raise ValueError("Place latitude must be in range -90.0 to 90.0")
+        return float(latitude)
 
-    @property
+    @hybrid_property
     def longitude(self):
         """
         Get the longitude of the place.
 
         Returns:
-            float: The longitude of the place.
+            float: The longitude coordinate.
         """
         return self._longitude
 
@@ -246,39 +230,28 @@ class Place(BaseModel):
         Set the longitude of the place.
 
         Args:
-            longitude (float): The new longitude of the place.
+            longitude (float|int): The new longitude.
+        """
+        self._longitude = longitude
+    
+    @validates("_longitude")
+    def validate_place_longitude(self, key, longitude):
+        """
+        Validate the longitude of the place.
+
+        Args:
+            key (str): The attribute key.
+            longitude (float|int): The longitude to validate.
+
+        Returns:
+            float: The validated longitude.
 
         Raises:
-            TypeError: If the longitude is not a float.
-            ValueError: If the longitude is not in the range -180.0 to 180.0.
+            TypeError: If longitude is not numeric.
+            ValueError: If longitude is not between -180.0 and 180.0.
         """
-        if type(longitude) is not float:
+        if not isinstance(longitude, (int, float)):
             raise TypeError("Place longitude must be type float")
         if longitude < -180.0 or longitude > 180.0:
             raise ValueError("Place longitude must be range -180.0 to 180.0")
-        self._longitude = longitude
-
-    @property
-    def owner_id(self):
-        """
-        Get the owner of the place.
-
-        Returns:
-            str: The owner of the place.
-        """
-        return self._owner_id
-
-    @owner_id.setter
-    def owner_id(self, owner_id):
-        """
-        Set the owner of the place.
-
-        Args:
-            owner (str): The new owner of the place.
-
-        Raises:
-            TypeError: If the owner_id is not a str.
-        """
-        if not isinstance(owner_id, str):
-            raise TypeError("Place owner_id must be a str")
-        self._owner_id = owner_id
+        return float(longitude)
