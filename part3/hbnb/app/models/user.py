@@ -1,12 +1,23 @@
 from app.models.basecls import BaseModel
-from app.extensions import bcrypt
+from app.extensions import bcrypt, db
 from email_validator import validate_email, EmailNotValidError
+from sqlalchemy.ext.hybrid import hybrid_property
+
 
 class User(BaseModel):
     """
     User model class that inherits from BaseModel.
-    Represents a user with first name, last name, email, and admin status.
+    Represents a user with first name, last name, email, password, and admin status.
+    Also handles password hashing and validation, and maintains a list of associated places.
     """
+    __tablename__ = "users"
+
+    # SQLAlchemy columns
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
     def __init__(self, first_name, last_name, email, password, is_admin=False):
         """
@@ -16,6 +27,7 @@ class User(BaseModel):
             first_name (str): The first name of the user.
             last_name (str): The last name of the user.
             email (str): The email of the user.
+            password (str): The plaintext password of the user. Will be hashed and stored.
             is_admin (bool): The admin status of the user. Defaults to False.
         """
         super().__init__()
@@ -28,14 +40,34 @@ class User(BaseModel):
 
     @property
     def password(self):
+        """
+        Get the hashed password.
+
+        Returns:
+            str: The hashed password.
+        """
         return self._password
 
     @password.setter
     def password(self, password):
+        """
+        Hash and set the password.
+
+        Args:
+            password (str): The plaintext password to hash and set.
+        """
         self._password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
+        """
+        Verify if the provided plaintext password matches the hashed password.
+
+        Args:
+            password (str): The plaintext password to verify.
+        
+        Returns:
+            bool: True if the password matches, False otherwise.
+        """
         return bcrypt.check_password_hash(self._password, password)
 
     def add_place(self, place):
@@ -47,7 +79,7 @@ class User(BaseModel):
         """
         self._places.append(place)
 
-    @property
+    @hybrid_property
     def places(self):
         """
         Get the list of places associated with the user.
@@ -78,7 +110,7 @@ class User(BaseModel):
         else:
             raise TypeError("User places can only process str or list")
 
-    @property
+    @hybrid_property
     def first_name(self):
         """
         Get the first name of the user.
@@ -106,7 +138,7 @@ class User(BaseModel):
             raise ValueError("User first name max chars is 50")
         self._first_name = first_name
 
-    @property
+    @hybrid_property
     def last_name(self):
         """
         Get the last name of the user.
@@ -134,7 +166,7 @@ class User(BaseModel):
             raise ValueError("User last name max chars is 50")
         self._last_name = last_name
 
-    @property
+    @hybrid_property
     def email(self):
         """
         Get the email of the user.
@@ -156,7 +188,7 @@ class User(BaseModel):
             raise EmailNotValidError
         self._email = email
 
-    @property
+    @hybrid_property
     def is_admin(self):
         """
         Get the admin status of the user.
