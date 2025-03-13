@@ -18,7 +18,7 @@ class Amenity(BaseModel):
     """
     __tablename__ = "amenities"
 
-    _name = db.Column("name", db.String(50), nullable=False)
+    _name = db.Column("name", db.String(50), nullable=False, unique=True)
 
     @hybrid_property
     def name(self):
