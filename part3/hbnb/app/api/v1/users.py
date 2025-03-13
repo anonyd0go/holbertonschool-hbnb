@@ -41,8 +41,8 @@ class UserList(Resource):
 
         try:
             new_user = facade.create_user(user_data)
-        except Exception:
-            return {"error": "Invalid input data"}, 400
+        except Exception as e:
+            return {"error": f"Invalid input data {e}"}, 400
 
         return {
             'id': new_user.id,
@@ -151,4 +151,34 @@ class UserResource(Resource):
             'last_name': updated_user.last_name,
             'email': updated_user.email,
             'places': updated_user.places
+        }, 200
+
+
+@api.route('/me')
+class CurrentUser(Resource):
+    @jwt_required()
+    @api.response(200, 'User details retrieved successfully')
+    @api.response(404, 'User not found')
+    def get(self):
+        """
+        Retrieve details of the currently authenticated user.
+
+        This endpoint returns the user information based on the JWT token provided.
+        It retrieves the user ID from the token and then fetches the corresponding user details.
+        
+        Returns:
+            dict: A dictionary containing the current user's details (id, first_name, last_name, email, and associated places).
+            int: HTTP status code 200 on success, or 404 if the user is not found.
+        """
+        current_user_id = get_jwt_identity()
+        user = facade.get_user(current_user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        return {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'places': user.places  # TODO format places if necessary.
         }, 200
