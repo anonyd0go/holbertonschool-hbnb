@@ -18,7 +18,8 @@ class User(BaseModel):
     _last_name = db.Column("last_name", db.String(50), nullable=False)
     _email = db.Column("email", db.String(120), nullable=False, unique=True)
     _password = db.Column("password", db.String(128), nullable=False)
-    places = db.relationship('Place', backref='owner', lazy=True)
+    places = db.relationship("Place", backref='owner', lazy=True)
+    reviews = db.relationship("Review", backref="user", lazy=True)
     _is_admin = db.Column(db.Boolean, default=False)
 
     @hybrid_property
