@@ -1,8 +1,9 @@
 from app.persistence.repository import SQLAlchemyRepository
-from app.models.user import User
+from app.persistence.dedicated_repo import UserRepository
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
+from app.models.user import User
 
 
 class HBnBFacade:
@@ -15,7 +16,7 @@ class HBnBFacade:
         Initialize the HBnBFacade with SQLAlchemy repositories for users,
         places, reviews, and amenities.
         """
-        self.user_repo = SQLAlchemyRepository(User)
+        self.user_repo = UserRepository()
         self.place_repo = SQLAlchemyRepository(Place)
         self.review_repo = SQLAlchemyRepository(Review)
         self.amenity_repo = SQLAlchemyRepository(Amenity)
@@ -57,7 +58,7 @@ class HBnBFacade:
         Returns:
             User: The retrieved user instance, or None if not found.
         """
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
     
     def get_users_all(self):
         """
@@ -67,6 +68,15 @@ class HBnBFacade:
             list: A list of all user instances.
         """
         return self.user_repo.get_all()
+    
+    def get_all_admins(self):
+        """
+        Retrieves all admin users
+
+        Returns:
+            list: A lists of all admin user instances
+        """
+        return self.user_repo.get_admin_users()
     
     def update_user(self, user_id, user_data):
         """
