@@ -24,31 +24,19 @@ review_model = api.model('PlaceReview', {
     'user_id': fields.String(description='ID of the user')
 })
 
-# Define the place model for input validation and documentation
+# Defines place model for complex data storing with nested models
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's"),
-    'reviews': fields.List(fields.String, description='List of reviews IDs')
-})
-
-""" Defines place model for complex data storing with nested models
-place_model = api.model('Place', {
-    'title': fields.String(required=True, description='Title of the place'),
-    'description': fields.String(description='Description of the place'),
-    'price': fields.Float(required=True, description='Price per night'),
-    'latitude': fields.Float(required=True, description='Latitude of the place'),
-    'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(user_model, description='Owner of the place'),
+    #'owner_id': fields.String(required=True, description='ID of the owner'),
+    #'owner': fields.Nested(user_model, description='Owner of the place'),
     'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
     'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
 })
-"""
+
 
 @api.route('/')
 class PlaceList(Resource):
@@ -61,7 +49,8 @@ class PlaceList(Resource):
         Register a new place.
 
         This endpoint allows for the registration of a new place. It expects
-        a JSON payload with the place's details.
+        a JSON payload with the place's details. The owner is determined from
+        the JWT token.
 
         Returns:
             dict: A dictionary containing the newly created place's details.
@@ -70,15 +59,15 @@ class PlaceList(Resource):
         current_user = get_jwt_identity()
 
         place_data = api.payload
-        place_data["owner_id"] = current_user # This might be a vulnerability
-        if not facade.get_user(place_data["owner_id"]):
+
+        place_data["owner_id"] = current_user
+        if not facade.get_user(current_user):
             return {"error": "Invalid input data"}, 400
 
         try:
             new_place = facade.create_place(place_data)
-        except Exception:
-            return {"error": "Invalid input data"}, 400
-        facade.update_user(current_user, {"places": new_place.id})
+        except Exception as e:
+            return {"error": f"Invalid input data {str(e)}"}, 400
 
         return {
             "id": new_place.id,
@@ -87,7 +76,7 @@ class PlaceList(Resource):
             "price": new_place.price,
             "latitude": new_place.latitude,
             "longitude": new_place.longitude,
-            "owner_id": new_place.owner_id
+            "owner": marshal(facade.get_user(new_place.owner_id), user_model)
         }, 201
 
     @api.response(200, 'List of places retrieved successfully')
@@ -100,16 +89,12 @@ class PlaceList(Resource):
             int: The HTTP status code.
         """
         place_repo_list = facade.get_all_places()
-        places_list = []
-        for place in place_repo_list:
-            places_list.append(
-                {
-                    "id": place.id,
-                    "title": place.title,
-                    "latitude": place.latitude,
-                    "longitude": place.longitude
-                }
-            )
+        places_list = [{
+            "id": place.id,
+            "title": place.title,
+            "latitude": place.latitude,
+            "longitude": place.longitude
+        } for place in place_repo_list]
         return places_list, 200
 
 @api.route('/<place_id>')
@@ -130,7 +115,7 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
-        # TODO: understand how to use fields.Nested for marshaling
+
         owner = facade.get_user(place.owner_id)
         amenities = [facade.get_amenity(amenity) for amenity in place.amenities]
         reviews = [facade.get_review(review) for review in place.reviews]
@@ -140,9 +125,10 @@ class PlaceResource(Resource):
             "description": place.description,
             "latitude": place.latitude,
             "longitude": place.longitude,
-            "owner": marshal(owner, user_model),
-            "amenities": [marshal(amenity, amenity_model) for amenity in amenities],
-            "reviews": [marshal(review, review_model) for review in reviews]
+            "rating": facade.get_average_rating_for_place(place.id),
+            "owner": marshal(owner, user_model) if owner else None,
+            "amenities": [marshal(amenity, amenity_model) for amenity in amenities if amenity],
+            "reviews": [marshal(review, review_model) for review in reviews if review]
         }, 200
 
     @api.expect(place_model)
@@ -155,8 +141,8 @@ class PlaceResource(Resource):
         """
         Update a place's information.
 
-        This endpoint updates a place's details by its ID. It expects
-        a JSON payload with the updated place details.
+        This endpoint updates a place's details by its ID. Only the owner
+        can update the place.
 
         Args:
             place_id (str): The ID of the place to update.
@@ -166,27 +152,29 @@ class PlaceResource(Resource):
             int: The HTTP status code.
         """
         current_user = get_jwt_identity()
-
         update_place_data = api.payload
-        # TODO validate update info user existance, review existance, and amenity existance
+
         place_to_update = facade.get_place(place_id)
+        allowed_update = {
+            "title", "description",
+            "price", "latitude", "longitude"
+        }
 
         if not place_to_update:
             return {"error": "Place not found"}, 404
         if place_to_update.owner_id != current_user:
             return {'error': 'Unauthorized action'}, 403
-        if not set(update_place_data.keys()).issubset(set(dir(place_to_update))):
+        if not set(update_place_data.keys()).issubset(allowed_update):
             return {"error": "Invalid input data"}, 400
 
         try:
             facade.update_place(place_id, update_place_data)
-        except:
-            return {"error": "Invalid input data"}, 400
+        except Exception as e:
+            return {"error": f"Invalid input data {str(e)}"}, 400
 
         return {"message": "Place updated successfully"}, 200
 
 
-# Did not understand how to get this uri to work from reviews.py
 @api.route('/places/<place_id>/reviews', endpoint='places')
 class PlaceReviewList(Resource):
     @api.response(200, 'List of reviews for the place retrieved successfully')
@@ -209,14 +197,6 @@ class PlaceReviewList(Resource):
             return {"error": "Place not found"}, 404
 
         place_review_list = [
-            facade.get_review(review_id) for review_id in place.reviews
+            marshal(facade.get_review(review)) for review in place.reviews if review
         ]
-        reviews_list = [
-            {
-                "id": review.id,
-                "text": review.text,
-                "rating": review.rating
-            } for review in place_review_list
-        ]
-
-        return reviews_list, 200
+        return place_review_list, 200
