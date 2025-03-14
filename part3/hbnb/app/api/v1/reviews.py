@@ -8,8 +8,8 @@ api = Namespace('reviews', description='Review operations')
 review_model = api.model('Review', {
     'text': fields.String(required=True, description='Text of the review'),
     'rating': fields.Integer(required=True, description='Rating of the place (1-5)'),
-    'user_id': fields.String(required=True, description='ID of the user'),
-    'place_id': fields.String(required=True, description='ID of the place')
+    # 'user_id': fields.String(required=True, description='ID of the user'),
+    # 'place_id': fields.String(required=True, description='ID of the place')
 })
 
 @api.route('/')
@@ -22,36 +22,37 @@ class ReviewList(Resource):
         """
         Register a new review.
 
-        This endpoint allows for the registration of a new review. It expects
-        a JSON payload with the review's details.
+        This endpoint allows an authenticated user to create a new review.
+        The user_id is taken from the JWT token and cannot be overridden.
 
         Returns:
             dict: A dictionary containing the newly created review's details.
             int: The HTTP status code.
         """
         current_user = get_jwt_identity()
+        review_data = api.payload
 
-        review_data = api.payload  #Find a way to utilize the authentication for task
-        if review_data["user_id"] != current_user:
-            return {"error": "Invalid input data"}, 400
+        review_data["user_id"] = current_user
 
         place_to_review = facade.get_place(review_data["place_id"])
-        user_giving_review = facade.get_user(review_data["user_id"])
+        if not place_to_review:
+            return {"error": "Place not found"}, 400
 
-        if user_giving_review or not place_to_review:
-            return {"error": "Invalid input data"}, 400
-        if review_data["place_id"] in user_giving_review.places:
+        user_giving_review = facade.get_user(current_user)
+        if not user_giving_review:
+            return {"error": "User not found"}, 400
+        if review_data["place_id"] in [plc.id for plc in facade.get_places_by_owner(current_user)]:
             return {"error": "You cannot review your own place"}, 400
+
         for review_id in place_to_review.reviews:
             review = facade.get_review(review_id)
-            if review.user_id == review_data["user_id"]:
+            if review and review.user_id == current_user:
                 return {"error": "You have already reviewed this place"}, 400
 
         try:
             new_review = facade.create_review(review_data)
         except Exception as e:
-            return {"error": "Invalid input data {}".format(e)}, 400
-        facade.update_place(new_review.place_id, {"reviews": new_review.id})
+            return {"error": f"Invalid input data {str(e)}"}, 400
 
         return {
             "id": new_review.id,
@@ -64,22 +65,20 @@ class ReviewList(Resource):
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """
-        Retrieve a list of all reviews from the repository.
+        Retrieve a list of all reviews.
 
         Returns:
             list: A list of dictionaries containing review details.
             int: The HTTP status code.
         """
-        review_repo_list = facade.review_repo.get_all()
-        reviews_list = []
-        for review in review_repo_list:
-            reviews_list.append(
-                {
-                    "id": review.id,
-                    "text": review.text,
-                    "rating": review.rating
-                }
-            )
+        review_repo_list = facade.get_all_reviews()
+        reviews_list = [
+            {
+                "id": review.id,
+                "text": review.text,
+                "rating": review.rating
+            } for review in review_repo_list
+        ]
 
         return reviews_list, 200
 
@@ -118,8 +117,10 @@ class ReviewResource(Resource):
     @jwt_required()
     def put(self, review_id):
         """
-        This endpoint updates a review's details by its ID. It expects
-        a JSON payload with the updated review details.
+        Update a review's details.
+
+        This endpoint updates a review. Only the author of the review can update it,
+        and only fields allowed by the review_model (text and rating) can be modified.
 
         Args:
             review_id (str): The ID of the review to update.
@@ -132,19 +133,19 @@ class ReviewResource(Resource):
 
         update_review_data = api.payload
         review_to_update = facade.get_review(review_id)
+        allowed_update = {"text", "rating"}
 
         if not review_to_update:
             return {"error": "Review not found"}, 404
-        if update_review_data["user_id"] != current_user:
+        if review_to_update.user_id != current_user:
             return {"error": "Unauthorized action"}, 403
-        if not set(update_review_data.keys()).issubset(set(dir(review_to_update))):
-            return {"error": "Invalid input data"}, 400
+        if not set(update_review_data.keys()).issubset(allowed_update):
+            return {"error": "Invalid input data: Only text and rating can be updated"}, 400
 
-        # TODO: validate place_id :: Isn't it be better to avoid modifying these?
         try:
             facade.update_review(review_id, update_review_data)
-        except:
-            return {"error": "Invalid input data"}, 400
+        except Exception as e:
+            return {"error": f"Invalid input data {str(e)}"}, 400
 
         return {"message": "Review updated successfully"}, 200
 
@@ -154,7 +155,7 @@ class ReviewResource(Resource):
     @jwt_required()
     def delete(self, review_id):
         """
-        This endpoint deletes a review by its ID.
+        Delete a review by its ID.
 
         Args:
             review_id (str): The ID of the review to delete.
@@ -170,11 +171,6 @@ class ReviewResource(Resource):
             return {"error": "Review not found"}, 404
         if review_to_delete.user_id != current_user:
             return {"error": "Unauthorized action"}, 403
-
-        # Update place.reviews persistance after review removal
-        associated_place = facade.get_place(review_to_delete.place_id)
-        associated_place.remove_review(review_id)
-        facade.update_place(associated_place.id, {"reviews": associated_place.reviews})
 
         facade.delete_review(review_id)
         return {"message": "Review deleted successfully"}, 200
