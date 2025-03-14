@@ -128,6 +128,8 @@ class UserResource(Resource):
 
         update_user_data = api.payload
         user = facade.get_user(user_id)
+        no_modification = {"email", "password"}
+
         if not user:
             return {"error": "User not found"}, 404
         if user.id != current_user:
@@ -135,8 +137,9 @@ class UserResource(Resource):
         if not set(update_user_data.keys()).issubset(set(dir(user))):
             return {"error": "Invalid input data"}, 400
 
-        if "email" in update_user_data.keys() or "password" in update_user_data.keys():
-            return {"error": "You cannot modify email or password"}, 400
+        for no_mod in no_modification:
+            if no_mod in update_user_data.keys():
+                return {"error": "You cannot modify email or password"}, 400
 
         # TODO validate places exist if it will be modified or find how to remove it if desired
         try:
