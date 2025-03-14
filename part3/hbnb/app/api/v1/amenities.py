@@ -17,18 +17,17 @@ class AmenityList(Resource):
         """
         Register a new amenity.
 
-        This endpoint allows for the registration of a new amenity. It expects
-        a JSON payload with the amenity's name.
-
+        Expects a JSON payload with the amenity's name.
+        
         Returns:
-            dict: A dictionary containing the newly created amenity's details.
-            int: The HTTP status code.
+            dict: Newly created amenity's details.
+            int: HTTP status code.
         """
         amenity_data = api.payload
         try:
             new_amenity = facade.create_amenity(amenity_data)
-        except Exception:
-            return {"error": "Invalid input data"}, 400
+        except Exception as e:
+            return {"error": f"Invalid input data {str(e)}"}, 400
 
         return {
             "id": new_amenity.id,
@@ -38,21 +37,19 @@ class AmenityList(Resource):
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
         """
-        Retrieve a list of all amenities.
+        Retrieve all amenities.
 
         Returns:
             list: A list of dictionaries containing amenity details.
             int: The HTTP status code.
         """
-        amenity_repo_list = facade.get_all_amenities()
-        amenities_list = []
-        for amenity in amenity_repo_list:
-            amenities_list.append(
-                {
-                    "id": amenity.id,
-                    "name": amenity.name
-                }
-            )
+        amenities = facade.get_all_amenities()
+        amenities_list = [
+            {
+                "id": amenity.id,
+                "name": amenity.name
+            } for amenity in amenities
+        ]
 
         return amenities_list, 200
 
@@ -104,7 +101,7 @@ class AmenityResource(Resource):
             return {'error': 'Amenity not found'}, 404
         try:
             facade.update_amenity(amenity_id, update_amenity_data)
-        except Exception:
-            return {"error": "Invalid input data"}, 400
+        except Exception as e:
+            return {"error": f"Invalid input data {str(e)}"}, 400
 
         return {"message" : "Amenity updated successfully"}, 200
