@@ -44,9 +44,8 @@ class ReviewList(Resource):
         if review_data["place_id"] in [plc.id for plc in facade.get_places_by_owner(current_user)]:
             return {"error": "You cannot review your own place"}, 400
 
-        for review_id in place_to_review.reviews:
-            review = facade.get_review(review_id)
-            if review and review.user_id == current_user:
+        for review in place_to_review.reviews:
+            if review.user_id == current_user:
                 return {"error": "You have already reviewed this place"}, 400
 
         try:
