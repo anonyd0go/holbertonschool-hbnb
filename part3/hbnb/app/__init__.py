@@ -19,13 +19,13 @@ def create_app(config_class="config.DevelopmentConfig"):
         Flask: The configured Flask application instance.
     """
     app = Flask(__name__)
+    #this is for SQLite db
+    init_cli(app)  #REMOVE for production
     app.config.from_object(config_class)
 
     bcrypt.init_app(app)
     jwt.init_app(app)
     db.init_app(app)
-    #this is for SQLite db
-    init_cli(app)  #REMOVE for production
     
     api = Api(
         app,
