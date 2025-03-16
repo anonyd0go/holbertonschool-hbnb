@@ -20,3 +20,5 @@ In this part, I will implement a true persistance layer for the application, ini
 
 5. Data Consistency and Validation:
     * Ensure data validation and constraints are properly enforced.
+
+Check the detailed rundown and see ER diagram [here](/part3/hbnb/README.md)
