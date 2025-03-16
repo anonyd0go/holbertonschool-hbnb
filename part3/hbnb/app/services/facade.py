@@ -123,6 +123,9 @@ class HBnBFacade:
             User: The authenticated user if credentials are valid, otherwise None.
         """
         return self.user_repo.authenticate_user(email, password)
+    
+    def delete_user(self, user_id):
+        self.user_repo.delete(user_id)
 
 #--------------Amenity facade CRUD ops--------------#
     def create_amenity(self, amenity_data):
@@ -181,6 +184,9 @@ class HBnBFacade:
             Amenity: The matching amenity instance, or None if not found.
         """
         return self.amenity_repo.get_amenity_by_name(name)
+    
+    def delete_amenity(self, amenity_id):
+        self.amenity_repo.delete(amenity_id)
 
 #--------------Place facade CRUD ops--------------#
     def create_place(self, place_data):
@@ -280,6 +286,9 @@ class HBnBFacade:
             return None
         ratings = [self.review_repo.get(review)._rating for review in place.reviews]
         return sum(ratings) / len(ratings) if ratings else None
+    
+    def delete_place(self, place_id):
+        self.place_repo.delete(place_id)
 
 #--------------Review facade CRUD ops--------------#
     def create_review(self, review_data):
