@@ -9,7 +9,7 @@ curl -X PUT http://localhost:5000/api/v1/amenities/   -H "Content-Type: applicat
 user:
 curl -X POST http://localhost:5000/api/v1/users/ \
   -H "Content-Type: application/json" \
-  -d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com", "password": "passcode123"}'
+  -d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com", "password": "pass"}'
 
 curl -X GET http://localhost:5000/api/v1/users/ \
   -H "Content-Type: application/json"
@@ -18,33 +18,50 @@ curl -X PUT http://localhost:5000/api/v1/users/ \
   -H "Content-Type: application/json" \
   -d '{}'
 
+curl -X POST "http://127.0.0.1:5000/api/v1/auth/login" -H "Content-Type: application/json" -d '{
+  "email": "john.doe@example.com",
+  "password": "pass"
+}'
+
+curl -X GET "http://127.0.0.1:5000/api/v1/protected" -H "Authorization: Bearer your_generated_jwt_token"
+
+curl -X POST http://localhost:5000/api/v1/admin/users/ \
+-H "Content-Type: application/json" \
+-d '{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com", "password": "pass"}' \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc0MjE2MDU1MiwianRpIjoiNjY1MGE5MDAtYzdiYi00NDg4LTk4MDQtNzg4NzJhNWZmMTU2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjM2YzkwNTBlLWRkZDMtNGMzYi05NzMxLTlmNDg3MjA4YmJjMSIsIm5iZiI6MTc0MjE2MDU1MiwiY3NyZiI6ImZhMDY5OWRkLWM5ODYtNGIwNS04YTE0LTVkMDQzNzVjMzY3YSIsImV4cCI6MTc0MjE2MTQ1MiwiaXNfYWRtaW4iOnRydWV9.CRpFxMKCy_dWimD7gEWENfZjOkt0itaX-fv9B_T41X8"
+
 
 place:
 curl -X POST http://localhost:5000/api/v1/places/ \
   -H "Content-Type: application/json" \
-  -d '{ "title": "Cozy Apartment", "description": "Anice place to stay", "price": 100.0, "latitude": 37.7749, "longitude": -122.4194, "owner_id": "" }'
+  -d '{ "title": "Cozy Apartment", "description": "Anice place to stay", "price": 100.0, "latitude": 37.7749, "longitude": -122.4194 }' \
+  -H "Authorization: Bearer <your_token>"
 
 curl -X GET http://localhost:5000/api/v1/places/ -H "Content-Type: application/json"
 
 curl -X PUT http://localhost:5000/api/v1/places/ \
   -H "Content-Type: application/json" \
-  -d '{}'
+  -d '{"title": "Updated Place"}' \
+  -H "Authorization: Bearer <your_token>"
 
 
 review:
 curl -X POST http://localhost:5000/api/v1/reviews/ \
   -H "Content-Type: application/json" \
-  -d '{"text": "Great place to stay!", "rating": 5, "user_id": "", "place_id": ""}'
+  -d '{"text": "Great place to stay!", "rating": 5, "user_id": "", "place_id": ""}' \
+  -H "Authorization: Bearer <your_token>"
 
 curl -X GET http://localhost:5000/api/v1/reviews/ \
   -H "Content-Type: application/json"
 
 curl -X PUT http://localhost:5000/api/v1/reviews/ \
   -H "Content-Type: application/json" \
-  -d '{}'
+  -d '{}' \
+  -H "Authorization: Bearer <your_token>"
 
 curl -X DELETE http://localhost:5000/api/v1/reviews/ \
-  -H "Content-Type: application/json"
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your_token>"
 
 curl -X GET http://localhost:5000/api/v1/places/<place_id>/reviews \
   -H "Content-Type: application/json"
