@@ -125,6 +125,12 @@ class HBnBFacade:
         return self.user_repo.authenticate_user(email, password)
     
     def delete_user(self, user_id):
+        """
+        Delete a user by its ID.
+
+        Args:
+            user_id (str): The ID of the user to delete.
+        """
         self.user_repo.delete(user_id)
 
 #--------------Amenity facade CRUD ops--------------#
@@ -186,6 +192,12 @@ class HBnBFacade:
         return self.amenity_repo.get_amenity_by_name(name)
     
     def delete_amenity(self, amenity_id):
+        """
+        Delete an amenity by its ID.
+
+        Args:
+            amenity_id (str): The ID of the amenity to delete.
+        """
         self.amenity_repo.delete(amenity_id)
 
 #--------------Place facade CRUD ops--------------#
@@ -288,6 +300,12 @@ class HBnBFacade:
         return sum(ratings) / len(ratings) if ratings else None
     
     def delete_place(self, place_id):
+        """
+        Delete a place by its ID.
+
+        Args:
+            place_id (str): The ID of the place to delete.
+        """
         self.place_repo.delete(place_id)
 
 #--------------Review facade CRUD ops--------------#
