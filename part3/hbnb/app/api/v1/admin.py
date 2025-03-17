@@ -47,6 +47,19 @@ class AdminUserResource(Resource):
     @api.response(200, 'User succesfully updated')
     @jwt_required()
     def put(self, user_id):
+        """
+        Update an existing user's information.
+
+        Only an admin can update user details.
+
+        Args:
+            user_id (str): The unique identifier of the user to update.
+        
+        Returns:
+            JSON response containing a success message along with the updated
+            user data, user's associated places, and reviews on success,
+            or an error message with an appropriate HTTP status code on failure.
+        """
         current_user = get_jwt_identity()
         user_jwt = get_jwt()
 
@@ -59,8 +72,6 @@ class AdminUserResource(Resource):
             return {'error': 'User not found'}, 404
 
         user_update_data = api.payload
-        if not set(user_update_data.keys()).issubset(set(user_model)):
-            return {'error': 'Invalid input data'}, 400
 
         if user_update_data["email"]:
             # Check if email is already in use
@@ -70,8 +81,8 @@ class AdminUserResource(Resource):
 
         try:
             facade.update_user(user_id, user_update_data)
-        except Exception:
-            return {"error": "Invalid input data"}, 400
+        except Exception as e:
+            return {"error": f"Invalid input data {e}"}, 400
         updated_user = facade.get_user(user_id)
 
         return {
@@ -84,13 +95,26 @@ class AdminUserResource(Resource):
 
 @api.route('/users/')
 class AdminUserCreate(Resource):
-    @api.expect(user_model)
+    @api.expect(user_model, validate=True)
     @api.response(201, 'User succesfully created')
     @api.response(400, 'Invalid input data')
     @api.response(400, 'Email already registered')
     @api.response(403, 'Admin privileges required')
     @jwt_required()
     def post(self):
+        """
+        Create a new user account.
+
+        Only an admin is allowed to create new users.
+
+        Expects:
+            JSON payload with keys defined by the user_model (first_name,
+            last_name, email, password, is_admin if applicable).
+        
+        Returns:
+            A JSON payload containing the new user's ID and a success message on success,
+            or an error message with the appropriate HTTP status code.
+        """
         current_user = get_jwt_identity()
         user_jwt = get_jwt()
 
@@ -98,18 +122,15 @@ class AdminUserCreate(Resource):
             return {'error': 'Admin privileges required'}, 403
 
         user_data = api.payload
-        if not set(user_data.keys()).issubset(set(user_model)):
-            return {'error': 'Invalid input data'}, 400
 
         # Check if email is already in use
         if facade.get_user_by_email(user_data["email"]):
             return {'error': 'Email already registered'}, 400
 
-        # Logic to create a new user
         try:
             new_user = facade.create_user(user_data)
         except Exception as e:
-            return {"error": f"Invalid input data {e}"}, 400
+            return {"error": f"Invalid input data {str(e)}"}, 400
         
         return {
             'id': new_user.id,
@@ -125,13 +146,24 @@ class AdminAmenityCreate(Resource):
     @api.response(403, 'Admin privileges required')
     @jwt_required()
     def post(self):
+        """
+        Create a new amenity.
+
+        Only an admin is allowed to create new amenities.
+
+        Expects:
+            JSON payload with the amenity's name.
+        
+        Returns:
+            A JSON payload containing the new amenity's ID and name on success,
+            or an error message with the appropriate HTTP status code.
+        """
         current_user = get_jwt_identity()
         user_jwt = get_jwt()
 
         if current_user and not user_jwt["is_admin"]:
             return {'error': 'Admin privileges required'}, 403
 
-        # Logic to create a new amenity
         amenity_data = api.payload
         try:
             new_amenity = facade.create_amenity(amenity_data)
@@ -151,6 +183,21 @@ class AdminAmenityModify(Resource):
     @api.response(404, 'Amenity not found')
     @jwt_required()
     def put(self, amenity_id):
+        """
+        Update an amenity's details.
+
+        Only an admin is allowed to update amenities.
+
+        Args:
+            amenity_id (str): The unique identifier of the amenity.
+        
+        Expects:
+            JSON payload with the amenity data to update.
+        
+        Returns:
+            A JSON payload with a success message on successful update,
+            or an error message with an appropriate HTTP status code.
+        """
         current_user = get_jwt_identity()
         user_jwt = get_jwt()
 
@@ -179,6 +226,21 @@ class AdminPlaceModify(Resource):
     @api.response(403, 'Unauthorized action')
     @jwt_required()
     def put(self, place_id):
+        """
+        Update a place's details.
+
+        Admins can update any place while non-admin users can only update if they are the owner.
+
+        Args:
+            place_id (str): The unique identifier of the place.
+        
+        Expects:
+            JSON payload with place details to update.
+        
+        Returns:
+            A JSON payload with a success message on successful update,
+            or an error message with an appropriate HTTP status code.
+        """
         current_user = get_jwt_identity()
         user_jwt = get_jwt()
 
