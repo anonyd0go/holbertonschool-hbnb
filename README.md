@@ -8,4 +8,7 @@ This directory contains all documentation associated with the Hbnb project.  It 
 In this part of the HBnB Project, will consist of the implementation phase of the application based on the design developed in the previous part. The focus of this phase is to build the Presentation and Business Logic layers of the application using Python and Flask. I will implement the core functionality by defining the necessary classes, methods, and endpoints that will serve as the foundation for the application’s operation.
 
 ## [Part 3: Enhancing Backend with Authentication and Database Integration](/part3/)
-In this part of the HBnB Project, will consist of the extending the backend of the application with the introduction of **user authentication**, **authorization**, and **database integration**. This phase will focus on securing the back end of our application, integrating persistent storage, and preparing the application for the scalability of real world deployment.
+This part of the HBnB Project, will consist of the extending the backend of the application with the introduction of **user authentication**, **authorization**, and **database integration**. This phase will focus on securing the back end of our application, integrating persistent storage, and preparing the application for the scalability of real world deployment.
+
+## [Part 4: Simple Web Client](/part4/)
+In this phase, the focus will be on the front-end development of the application using HTML5, CSS3, and JavaScript ES6. It's goal is to design and implement an interactive user interface that connects with the back-end services have been developed in previous parts of the project.
