@@ -1,3 +1,4 @@
+from flask import render_template
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token
 from app.services import facade
@@ -40,3 +41,14 @@ class Login(Resource):
         
         # Step 4: Return the JWT token to the client
         return {'access_token': access_token}, 200
+    
+    def get(self):
+        """
+        Render the login page.
+
+        This endpoint serves the login.html template when a GET request is made.
+
+        Returns:
+            HTML: The login page.
+        """
+        return render_template('login.html')
