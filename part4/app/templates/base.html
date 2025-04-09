@@ -13,9 +13,9 @@
             <a href="{{ url_for('html.index') }}" id="home-button">Home</a>
             {% if request.endpoint != 'html.login' %}
                 {% if session.get('user') %}
-                    <a href="{{ url_for('html.logout') }}" id="logout-button" class="logout-button">Logout</a>
+                    <a href="{{ url_for('html.logout') }}" id="logout-button" class="logout-button" onclick="logoutUser()">Logout</a>
                 {% else %}
-                    <a href="{{ url_for('html.login') }}" id="login-button" class="login-button" style="display: inline-block;">Login</a>
+                    <a href="{{ url_for('html.login') }}" id="login-button" class="login-button">Login</a>
                 {% endif %}
             {% endif %}
         </nav>
