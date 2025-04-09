@@ -93,7 +93,8 @@ class PlaceList(Resource):
             "id": place.id,
             "title": place.title,
             "latitude": place.latitude,
-            "longitude": place.longitude
+            "longitude": place.longitude,
+            "price": place.price
         } for place in place_repo_list]
         return places_list, 200
 
