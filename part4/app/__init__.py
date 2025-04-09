@@ -8,6 +8,7 @@ from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
 from app.api.v1.protected import api as protected_ns
 from app.api.v1.admin import api as admin_ns
+from app.routes import html
 from app.cli import init_app as init_cli  # REMOVE for production
 
 
@@ -43,5 +44,8 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(auth_ns, path='/api/v1/auth')
     api.add_namespace(protected_ns, path='/api/v1/protected')
     api.add_namespace(admin_ns, path='/api/v1/admin')
+
+    # Register the HTML Blueprint
+    app.register_blueprint(html)
 
     return app
