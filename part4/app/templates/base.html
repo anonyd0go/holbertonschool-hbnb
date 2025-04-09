@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HBnB{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HBnB Logo" class="logo">
+        <nav>
+            <a href="{{ url_for('auth.login') }}" id="home-button">Home</a>
+            {% if not session.get('user') %}
+                <a href="{{ url_for('auth.login') }}" id="login-button" class="login-button">Login</a>
+            {% else %}
+                <a href="{{ url_for('auth.logout') }}" id="logout-button" class="logout-button">Logout</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        <!-- Child templates will insert their content here -->
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 HBnB Evolution. All rights reserved.</p>
+    </footer>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
