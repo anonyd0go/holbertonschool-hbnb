@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import session
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token
 from app.services import facade
@@ -11,7 +11,7 @@ login_model = api.model('Login', {
     'password': fields.String(required=True, description='User password')
 })
 
-@api.route('/login')
+@api.route('/login', endpoint='auth.login')
 class Login(Resource):
     @api.expect(login_model)
     def post(self):
@@ -38,17 +38,9 @@ class Login(Resource):
         access_token = create_access_token(
             identity=str(user.id), additional_claims={'is_admin': user.is_admin}
         )
-        
-        # Step 4: Return the JWT token to the client
+
+        # Step 4: Store the user in the session
+        session['user'] = {'id': user.id, 'email': user.email, 'is_admin': user.is_admin}
+
+        # Step 5: Redirect to the home page after successful login
         return {'access_token': access_token}, 200
-    
-    def get(self):
-        """
-        Render the login page.
-
-        This endpoint serves the login.html template when a GET request is made.
-
-        Returns:
-            HTML: The login page.
-        """
-        return render_template('login.html')
