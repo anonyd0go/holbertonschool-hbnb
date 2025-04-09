@@ -10,11 +10,13 @@
     <header>
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="HBnB Logo" class="logo">
         <nav>
-            <a href="{{ url_for('auth.login') }}" id="home-button">Home</a>
-            {% if not session.get('user') %}
-                <a href="{{ url_for('auth.login') }}" id="login-button" class="login-button">Login</a>
-            {% else %}
-                <a href="{{ url_for('auth.logout') }}" id="logout-button" class="logout-button">Logout</a>
+            <a href="{{ url_for('html.index') }}" id="home-button">Home</a>
+            {% if request.endpoint != 'html.login' %}
+                {% if session.get('user') %}
+                    <a href="{{ url_for('html.logout') }}" id="logout-button" class="logout-button">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('html.login') }}" id="login-button" class="login-button" style="display: inline-block;">Login</a>
+                {% endif %}
             {% endif %}
         </nav>
     </header>
