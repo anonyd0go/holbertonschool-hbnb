@@ -28,6 +28,8 @@
     <footer>
         <p>&copy; 2024 HBnB Evolution. All rights reserved.</p>
     </footer>
-    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='base_logins.js') }}"></script>
+    {% block scripts %}
+    {% endblock %}
 </body>
 </html>
