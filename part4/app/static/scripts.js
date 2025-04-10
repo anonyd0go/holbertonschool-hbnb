@@ -1,4 +1,4 @@
-// -------------------- Authentication-Related Functions --------------------
+// -------------------- Login -Related Functions --------------------
 
 // Function to log in a user
 async function loginUser(email, password) {
@@ -11,14 +11,12 @@ async function loginUser(email, password) {
     });
 }
 
-// Function to check if the user is authenticated
-function checkAuthentication() {
-    const token = getCookie('token');
-    const loginLink = document.getElementById('login-button');
-
-    if (!token) {
-        fetchPlaces(token);
-    }
+// Function to logout a user
+function logoutUser() {
+    // Clear the JWT token cookie
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    // Redirect to the login page
+    window.location.href = '/login';
 }
 
 // Function to get a cookie value by its name
@@ -29,12 +27,14 @@ function getCookie(name) {
     return null;
 }
 
-// Function to logout a user
-function logoutUser() {
-    // Clear the JWT token cookie
-    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    // Redirect to the login page
-    window.location.href = '/login';
+// Function to check if the user is authenticated
+function checkAuthentication() {
+    const token = getCookie('token');
+    const loginLink = document.getElementById('login-button');
+
+    if (!token) {
+        fetchPlaces(token);
+    }
 }
 
 // -------------------- Index Page Functions --------------------
