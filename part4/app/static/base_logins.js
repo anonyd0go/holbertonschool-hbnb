@@ -33,7 +33,9 @@ function checkAuthentication() {
     const loginLink = document.getElementById('login-button');
 
     if (!token) {
-        fetchPlaces(token);
+        if (loginLink) loginLink.style.display = 'inline-block';
+    } else {
+        if (loginLink) loginLink.style.display = 'none';
     }
 }
 
@@ -42,6 +44,10 @@ function checkAuthentication() {
 // Function to populate the price filter dropdown
 function populatePriceFilter() {
     const priceFilter = document.getElementById('price-filter');
+    if (!priceFilter) {
+        return; // Exit the function if the element does not exist
+    }
+
     const priceOptions = [10, 50, 100, 'All'];
 
     priceOptions.forEach(price => {
@@ -81,6 +87,9 @@ async function fetchPlaces(token = null) {
 // Function to display places dynamically
 function displayPlaces(places) {
     const placesList = document.getElementById('places-list');
+    if (!placesList) {
+        return; // Exit the function if the element does not exist
+    }
     placesList.innerHTML = ''; // Clear the current content
 
     places.forEach(place => {
@@ -106,6 +115,9 @@ function displayPlaces(places) {
 // Function to set up client-side filtering
 function setupPriceFilter() {
     const priceFilter = document.getElementById('price-filter');
+    if (!priceFilter) {
+        return; // Exit function if element does not exist
+    }
 
     priceFilter.addEventListener('change', (event) => {
         const selectedPrice = event.target.value;
