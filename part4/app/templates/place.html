@@ -23,11 +23,14 @@
 
             <label for="review">Review:</label>
             <textarea id="review" name="review" required></textarea>
-            <button type="submit">Submit</button>
+            <button type="submit">Submit Review</button>
         </form>
+        <p id="success-message" style="display: none; color: green;">Review submitted successfully!</p>
+        <p id="error-message" style="display: none; color: red;">Failed to submit review. Please try again.</p>
     </section>
 {% endblock %}
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='place-details.js') }}"></script>
+    <script src="{{ url_for('static', filename='add_review.js') }}"></script>
 {% endblock %}
