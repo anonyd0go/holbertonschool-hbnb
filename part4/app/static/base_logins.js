@@ -93,6 +93,12 @@ function displayPlaces(places) {
             <button class="view-details-button" data-id="${place.id}">View Details</button>
         `;
 
+        // Add event listener to the "View Details" button
+        const viewDetailsButton = placeCard.querySelector('.view-details-button');
+        viewDetailsButton.addEventListener('click', () => {
+            window.location.href = `/place/${place.id}`;
+        });
+
         placesList.appendChild(placeCard);
     });
 }
