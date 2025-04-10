@@ -89,9 +89,8 @@ function displayPlaces(places) {
 
         placeCard.innerHTML = `
             <h3>${place.title}</h3>
-            <p>${place.description}</p>
-            <p>Price: $${place.price}</p>
-            <p>Location: (${place.latitude}, ${place.longitude})</p>
+            <p class="place-price">Price: $${place.price}</p>
+            <button class="view-details-button" data-id="${place.id}">View Details</button>
         `;
 
         placesList.appendChild(placeCard);
@@ -107,7 +106,7 @@ function setupPriceFilter() {
         const placesList = document.querySelectorAll('.place-card');
 
         placesList.forEach(placeCard => {
-            const priceText = placeCard.querySelector('p:nth-child(3)').textContent;
+            const priceText = placeCard.querySelector('.place-price').textContent;
             const price = parseFloat(priceText.replace('Price: $', ''));
 
             if (selectedPrice === 'all' || price <= parseFloat(selectedPrice)) {
