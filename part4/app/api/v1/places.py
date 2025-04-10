@@ -126,6 +126,7 @@ class PlaceResource(Resource):
             "description": place.description,
             "latitude": place.latitude,
             "longitude": place.longitude,
+            "price": place.price,
             "rating": facade.get_average_rating_for_place(place.id),
             "owner": marshal(owner, user_model) if owner else None,
             "amenities": [marshal(amenity, amenity_model) for amenity in amenities if amenity],
