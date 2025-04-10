@@ -11,4 +11,8 @@ In this part of the HBnB Project, will consist of the implementation phase of th
 This part of the HBnB Project, will consist of the extending the backend of the application with the introduction of **user authentication**, **authorization**, and **database integration**. This phase will focus on securing the back end of our application, integrating persistent storage, and preparing the application for the scalability of real world deployment.
 
 ## [Part 4: Simple Web Client](/part4/)
-In this phase, the focus will be on the front-end development of the application using HTML5, CSS3, and JavaScript ES6. It's goal is to design and implement an interactive user interface that connects with the back-end services have been developed in previous parts of the project.
+This phase focuses on the front-end development of the HBnB application, integrating it with the back-end services developed in previous parts. The goal is to design and implement an interactive user interface using **HTML5**, **CSS3**, and **JavaScript ES6** while leveraging RESTful APIs for dynamic data interaction.
+
+## Contributors
+* **[Diego Diaz Florez](https://github.com/anonyd0go)** - Developer
+* **Holberton School** - Project guidance
