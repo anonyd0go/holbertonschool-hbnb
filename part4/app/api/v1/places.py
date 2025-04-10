@@ -118,8 +118,8 @@ class PlaceResource(Resource):
             return {"error": "Place not found"}, 404
 
         owner = facade.get_user(place.owner_id)
-        amenities = [facade.get_amenity(amenity) for amenity in place.amenities]
-        reviews = [facade.get_review(review) for review in place.reviews]
+        amenities = [facade.get_amenity(amenity.id) for amenity in place.amenities]
+        reviews = [facade.get_review(review.id) for review in place.reviews]
         return {
             "id": place.id,
             "title": place.title,
@@ -177,7 +177,7 @@ class PlaceResource(Resource):
         return {"message": "Place updated successfully"}, 200
 
 
-@api.route('/places/<place_id>/reviews', endpoint='places')
+@api.route('/<place_id>/reviews')
 class PlaceReviewList(Resource):
     @api.response(200, 'List of reviews for the place retrieved successfully')
     @api.response(404, 'Place not found')
@@ -199,6 +199,6 @@ class PlaceReviewList(Resource):
             return {"error": "Place not found"}, 404
 
         place_review_list = [
-            marshal(facade.get_review(review)) for review in place.reviews if review
+            marshal(facade.get_review(review.id), review_model) for review in place.reviews if review
         ]
         return place_review_list, 200
