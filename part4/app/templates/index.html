@@ -3,6 +3,7 @@
 {% block title %}List of Places - HBnB{% endblock %}
 
 {% block content %}
+    <h2 id="places-list-h2">Available Places</h2>
     <section id="filter">
         <label for="price-filter">Max Price:</label>
         <select id="price-filter">
@@ -10,7 +11,6 @@
         </select>
     </section>
     <section id="places-list">
-        <h2>Available Places</h2>
         <!-- List of places will be dynamically populated by JavaScript -->
     </section>
 {% endblock %}
