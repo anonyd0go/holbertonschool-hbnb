@@ -59,6 +59,7 @@ function populatePriceFilter() {
 }
 
 // Function to fetch places data from the API
+/* Need to find a way to only fetch places if in the index.html page */
 async function fetchPlaces(token = null) {
     try {
         const headers = {
