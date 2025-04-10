@@ -45,3 +45,16 @@ def logout():
     session.pop('access_token', None)
     session.clear()
     return redirect(url_for('html.login'))
+
+@html.route('/place/<place_id>')
+def place_details(place_id):
+    """
+    Render the place details page.
+
+    Args:
+        place_id (str): The ID of the place to display.
+
+    Returns:
+        HTML: The place details page.
+    """
+    return render_template('place.html', place_id=place_id)
