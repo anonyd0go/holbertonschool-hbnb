@@ -296,7 +296,7 @@ class HBnBFacade:
         place = self.get_place(place_id)
         if not place or not place.reviews:
             return None
-        ratings = [self.review_repo.get(review)._rating for review in place.reviews]
+        ratings = [self.review_repo.get(review.id)._rating for review in place.reviews]
         return sum(ratings) / len(ratings) if ratings else None
     
     def delete_place(self, place_id):
